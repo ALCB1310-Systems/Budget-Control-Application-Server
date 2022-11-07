@@ -1,0 +1,16 @@
+{
+  "name": "scp-backend",
+  "version": "1.0.0",
+  "description": "SCP backend build with typescript and TypeORM ",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "typescript",
+    "typeorm",
+    "scp"
+  ],
+  "author": "Andrés Court",
+  "license": "ISC"
+}
