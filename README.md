@@ -1,6 +1,6 @@
 # ***BUDGET CONTROL APP***
 
-## Tech stack
+- ## [Tech stack](./Documentation/tech-stack.md)
 
 ![Node JS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Typescript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -10,3 +10,5 @@
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white)
 
 [More...](./Documentation/tech-stack.md)
+
+- ## [File structure](./Documentation/project-file-structure.md)
