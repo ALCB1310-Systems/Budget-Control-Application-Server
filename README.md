@@ -12,3 +12,11 @@
 [More...](./Documentation/tech-stack.md)
 
 - ## [File structure](./Documentation/project-file-structure.md)
+
+[//]: # (TODO insert an image of the folder structure when done)
+
+- ## [Coding Standards](./Documentation/coding-standards.md)
+
+In this section you will be able to find all of the coding standards that will govern this project, like how to name the variables, how to create functions, write strings, etc
+
+[More...](./Documentation/coding-standards.md)

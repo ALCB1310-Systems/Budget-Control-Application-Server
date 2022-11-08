@@ -12,6 +12,7 @@ In this document, it will be specified the different folers that will be used an
   - *controller* This folder will contain all of the database operations required
   - *middleware* This folder will contain all of the middlewares used to validate data
   - *auth* This folder will contain all of the authorization functions (login, token generator, and validator, etc.)
+  - *types* This folder will hold all of the custom types that the app will use
 
 - *tests* This folder will contain all of the automated tests that makes sure the app works accordingly to its design
 
