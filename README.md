@@ -5,7 +5,6 @@
 
 ![5%](https://progress-bar.dev/5/)
 
-
 ## [Tech stack](./Documentation/tech-stack.md)
 
 ![Node JS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
@@ -61,3 +60,7 @@ Given this the main RDBMS available are the following:
 There are others too, but the ones listed are the major free open source database management systems.
 
 After doing some research it was decided we will be working with PostgreSQL.  This RDBMS is common to find in many sites where we can deploy the app like [Railways](https://railway.app/), [Heroku](https://www.heroku.com/) or many others that are available.
+
+### Entity Relationship Diagram
+
+![EntityRelationshipDiagram](./Documentation/graphics/BCAB.png)
