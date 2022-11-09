@@ -64,3 +64,61 @@ After doing some research it was decided we will be working with PostgreSQL.  Th
 ### Entity Relationship Diagram
 
 ![EntityRelationshipDiagram](./Documentation/graphics/BCAB.png)
+
+## Routes
+
+### Routing naming convention
+
+This project will have a RESTfull design, with this in mind, there are the following considerations:
+
+- All routes will be within the /api/v1.0 route.  This identifies that the route is within the API and in its version 1.0, so when there are upgrades we can keep track of it.
+- All routes will have the name of the entity with which it is working with and will always be plural. Eg. the route /users will work with the Users entity
+- The routes, depending on its necesities, will work with the following methods:
+
+  - POST: To create a new element, eg. a POST request to the /users endpoint will create a new user
+  - GET: This will retrieve the information of the element, this will be sepparated into two different routes
+
+    - A GET request to the base endpoint, will get all of the elements for that entity
+    - A GET request passing in the route the UUID of the element, will return the one element
+
+  - PUT: This request will always have to reference a specific UUID, and will be in charge of updating the corresponding element
+  - DELETE: This request will always have to reference a specific UUID, and will be in charge of deleting the corresponding element, keeping in mind that this request will be used on very specific cases.
+
+**Example:**
+
+|Resource|POST|GET|PUT|DELETE|
+|---|---|---|---|---|
+|/users|Create a new user|Retrieve all users|Error|Error|
+|/users/1|Error|Retrieve details of user 1|Update details of user 1|Deletes user 1|
+
+### Data modeling
+
+All the information that will be sent to and from the API will be in a JSON format, so the headers must include
+
+```HTTP
+Content-Type: application/json
+```
+
+### Routes available
+
+These are the available routes for this API and a brief description:
+
+|Route|GET|POST|PUT|DELETE|Description|
+|---|---|---|---|---|---|
+|/login|✖️|✔️|✖️|✖️|Login process, generates the JWT token|
+|/companies|✔️|✔️|✔️|✖️|Information about the companies that uses the application|
+|/users|✔️|✔️|✔️|✖️|User information including email and password|
+|/budget-items|✔️|✔️|✔️|✖️|Budget item information|
+|/suppliers|✔️|✔️|✔️|✖️|Supplier contact information|
+|/projects|✔️|✔️|✔️|✖️|Information about the project we are budgeting|
+|/budgets|✔️|✔️|✔️|✖️|Budget information, the core of the application|
+|/invoices|✔️|✔️|✔️|✖️|Invoice header information|
+|/invoice-details|✔️|✔️|✖️|✔️|Detail of the invoice indicating what budget item will be afected|
+
+Almost all of the routes will be *protected* routes, meaning you will need to be logged in to be able to access.  The only routes that will not be protected are:
+
+- login (POST)
+- comapnies(POST)
+- users(POST)
+
+The reason is with the first the authentication token will be generated and credentials will be validated and with the other two is for the application registration process.
