@@ -84,7 +84,7 @@ This project will have a RESTfull design, with this in mind, there are the follo
   - PUT: This request will always have to reference a specific UUID, and will be in charge of updating the corresponding element
   - DELETE: This request will always have to reference a specific UUID, and will be in charge of deleting the corresponding element, keeping in mind that this request will be used on very specific cases.
 
-**Example**
+**Example:**
 
 |Resource|POST|GET|PUT|DELETE|
 |---|---|---|---|---|
@@ -99,3 +99,26 @@ All the information that will be sent to and from the API will be in a JSON form
 Content-Type: application/json
 ```
 
+### Routes available
+
+These are the available routes for this API and a brief description:
+
+|Route|GET|POST|PUT|DELETE|Description|
+|---|---|---|---|---|---|
+|/login|✖️|✔️|✖️|✖️|Login process, generates the JWT token|
+|/companies|✔️|✔️|✔️|✖️|Information about the companies that uses the application|
+|/users|✔️|✔️|✔️|✖️|User information including email and password|
+|/budget-items|✔️|✔️|✔️|✖️|Budget item information|
+|/suppliers|✔️|✔️|✔️|✖️|Supplier contact information|
+|/projects|✔️|✔️|✔️|✖️|Information about the project we are budgeting|
+|/budgets|✔️|✔️|✔️|✖️|Budget information, the core of the application|
+|/invoices|✔️|✔️|✔️|✖️|Invoice header information|
+|/invoice-details|✔️|✔️|✖️|✔️|Detail of the invoice indicating what budget item will be afected|
+
+Almost all of the routes will be *protected* routes, meaning you will need to be logged in to be able to access.  The only routes that will not be protected are:
+
+- login (POST)
+- comapnies(POST)
+- users(POST)
+
+The reason is with the first the authentication token will be generated and credentials will be validated and with the other two is for the application registration process.
