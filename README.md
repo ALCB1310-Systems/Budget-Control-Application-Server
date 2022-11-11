@@ -113,7 +113,7 @@ These are the available routes for this API and a brief description:
 |/projects|✔️|✔️|✔️|✖️|Information about the project we are budgeting|
 |/budgets|✔️|✔️|✔️|✖️|Budget information, the core of the application|
 |/invoices|✔️|✔️|✔️|✖️|Invoice header information|
-|/invoice-details|✔️|✔️|✖️|✔️|Detail of the invoice indicating what budget item will be afected|
+|/invoice/{uuid}/details|✔️|✔️|✖️|✔️|Detail of the invoice indicating what budget item will be afected|
 
 Almost all of the routes will be *protected* routes, meaning you will need to be logged in to be able to access.  The only routes that will not be protected are:
 
