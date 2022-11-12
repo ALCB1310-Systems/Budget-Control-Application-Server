@@ -22,6 +22,8 @@ export class Company extends BaseEntity {
     @OneToMany(() => User, (user) => user.company)
     users: User[]
     
-    @CreateDateColumn()
+    @CreateDateColumn({
+        type: 'timestamptz'
+    })
     created_at: Date
 }

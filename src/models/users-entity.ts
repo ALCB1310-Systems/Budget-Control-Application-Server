@@ -30,6 +30,8 @@ export class User extends BaseEntity{
     })
     name: string
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        type: 'timestamptz'
+    })
     created_at: Date
 }

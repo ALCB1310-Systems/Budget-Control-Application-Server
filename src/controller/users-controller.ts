@@ -3,15 +3,7 @@ import { v4 } from "uuid"
 import { User } from "../models/users-entity"
 import { AppDataSource } from "../db/data-source"
 import { userCreate } from "../types/users-type"
-import bcrypt from 'bcrypt'
-
-const hashPassword = async (plainPassword: string): Promise<string> => {
-    const salt = await bcrypt.genSalt(10)
-    
-    const returnPassword = await bcrypt.hash(plainPassword, salt)
-
-    return returnPassword
-}
+import { hashPassword } from '../middleware/passwordHashing';
 
 const userRepository = AppDataSource.getRepository(User)
 
