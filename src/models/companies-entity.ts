@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, Unique, BaseEntity, OneToMany } from 'typeorm'
+import { Entity, Column, PrimaryColumn, Unique, BaseEntity, OneToMany, CreateDateColumn } from 'typeorm'
 import { User } from './users-entity'
 
 @Entity()
@@ -22,10 +22,6 @@ export class Company extends BaseEntity {
     @OneToMany(() => User, (user) => user.company)
     users: User[]
     
-    // constructor(ruc: string, name: string, employees: number) {
-    //     this.uuid = v4()
-    //     this.ruc = ruc
-    //     this.name = name
-    //     this.employees = employees
-    // }
+    @CreateDateColumn()
+    created_at: Date
 }
