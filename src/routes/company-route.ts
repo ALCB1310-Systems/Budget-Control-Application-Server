@@ -1,3 +1,4 @@
+import { createCompany } from './../controller/companies-controller';
 import express, { Request, Response, Router } from 'express'
 import { companyCreate } from '../types/company-type'
 
@@ -11,9 +12,10 @@ router.post('/', async (req: Request, res: Response) => {
     if(!ruc) return res.status(400).json({detail: "The ruc field is required"})
     if(!name) return res.status(400).json({detail: "The name field is required"})
     if(!employees) return res.status(400).json({detail: "The employees field is required"})
-
-    return res.sendStatus(205)
     
+    const createCompanyResult = await createCompany(req.body)
+
+    return res.status(createCompanyResult.status).json({detail: createCompanyResult.detail})
 })
 
 export default router
