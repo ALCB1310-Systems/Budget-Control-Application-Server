@@ -1,10 +1,13 @@
-import { Entity, Column, PrimaryColumn, Unique, BaseEntity } from 'typeorm'
+import { Entity, Column, PrimaryColumn, Unique, BaseEntity, OneToMany } from 'typeorm'
+import { User } from './users-entity'
 
 @Entity()
 @Unique(["name"])
 @Unique(["ruc"])
 export class Company extends BaseEntity {
-    @PrimaryColumn()
+    @PrimaryColumn({
+        type: 'uuid'
+    })
     uuid: string
 
     @Column()
@@ -15,6 +18,9 @@ export class Company extends BaseEntity {
 
     @Column({ type: "int"})
     employees: number
+
+    @OneToMany(() => User, (user) => user.company)
+    users: User[]
     
     // constructor(ruc: string, name: string, employees: number) {
     //     this.uuid = v4()
