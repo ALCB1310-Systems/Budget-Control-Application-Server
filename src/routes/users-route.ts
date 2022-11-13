@@ -1,6 +1,8 @@
+import { validateUUID } from './../middleware/validateUuid';
+import { formatManyUserResponse, formatOneUserResponse } from './../helpers/format';
 import { isPasswordValid } from './../middleware/validatePassword';
 import { isEmailValid } from './../middleware/validateEmail';
-import { getTotalUsers, createUser } from './../controller/users-controller';
+import { getTotalUsers, createUser, getAllUsers, getOneUser } from './../controller/users-controller';
 import { userCreate } from './../types/users-type';
 import { validateToken } from './../middleware/validateToken';
 import express, { Request, Response, Router } from 'express'
@@ -35,13 +37,36 @@ router.post('/', validateToken, async (req: Request, res: Response) => {
     
     const createUserResponse = await createUser({email, password, name, company})
 
-    return res.status(createUserResponse.status).json(createUserResponse.detail)
+    return res.status(createUserResponse.status).json({detail: formatOneUserResponse(createUserResponse.detail, company)})
 })
 
 router.get("/", validateToken,async (req:Request, res: Response) => {
     const { companyUUID } = res.locals.token
 
-    res.sendStatus(204)
+    // DATA VALIDATION
+    const company: Company | null = await getCompany(companyUUID)
+    if (!company) return res.status(404).json({detail: "Company not found"})
+    //  END OF DATA VALIDATION
+
+    const users = await getAllUsers(companyUUID)
+
+    res.status(200).json({detail: formatManyUserResponse(users, company)})
+})
+
+router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+	const uuid: string = req.params.uuid;
+
+    // DATA VALIDATION
+    const company: Company | null = await getCompany(companyUUID)
+    if (!company) return res.status(404).json({detail: "Company not found"})
+    //  END OF DATA VALIDATION
+
+    const user = await getOneUser(uuid, companyUUID)
+
+    if (!user) return res.status(404).json({detail: `No user found`})
+
+    return res.status(200).json({detail: formatOneUserResponse(user, company)})
 })
 
 export default router

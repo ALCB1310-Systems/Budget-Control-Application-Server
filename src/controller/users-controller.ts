@@ -56,3 +56,33 @@ export const getTotalUsers = async (company: Company) => {
     
     return totalUsers
 }
+
+export const getAllUsers =async (companyUuid:string): Promise<User[]> => {
+    const users = await userRepository
+        .createQueryBuilder("user")
+        .select("user.uuid")
+        .addSelect("user.email")
+        .addSelect("user.name")
+        .andWhere("user.companyUuid = :companyUuid")
+        .setParameter("companyUuid", companyUuid)
+        .orderBy("user.name")
+        .getMany()
+
+    return users
+}
+
+export const getOneUser =async (userUuid:string, companyUuid: string): Promise<User|null> => {
+    const user = await userRepository
+        .createQueryBuilder("user")
+        .select("user.uuid")
+        .addSelect("user.email")
+        .addSelect("user.name")
+        .andWhere("user.companyUuid = :companyUuid")
+        .andWhere("user.uuid = :userUuid")
+        .setParameter("companyUuid", companyUuid)
+        .setParameter("userUuid", userUuid)
+        .orderBy("user.name")
+        .getOne()
+
+    return user
+}

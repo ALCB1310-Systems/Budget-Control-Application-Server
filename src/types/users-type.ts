@@ -8,6 +8,7 @@ export type userCreate = {
 }
 
 export type userResponse = {
+    uuid: string,
     email: string,
     name: string,
     company: Company
