@@ -54,15 +54,17 @@ router.get("/", validateToken,async (req:Request, res: Response) => {
 })
 
 router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Response) => {
-    const { companyUUID } = res.locals.token
+    const { companyUUID, userUUID } = res.locals.token
 	const uuid: string = req.params.uuid;
+    
+    const uuidToLook = uuid.toLowerCase() === 'me' ? userUUID : uuid
 
     // DATA VALIDATION
     const company: Company | null = await getCompany(companyUUID)
     if (!company) return res.status(404).json({detail: "Company not found"})
     //  END OF DATA VALIDATION
 
-    const user = await getOneUser(uuid, companyUUID)
+    const user = await getOneUser(uuidToLook, companyUUID)
 
     if (!user) return res.status(404).json({detail: `No user found`})
 
