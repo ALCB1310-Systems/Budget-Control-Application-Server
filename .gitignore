@@ -1,3 +1,6 @@
-/node-modules/
+/node_modules/
 /build/
 package-lock.json
+.env
+/dist
+testUsers.md
