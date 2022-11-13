@@ -1,14 +1,14 @@
+import { Company } from './../models/companies-entity';
 import { saveUser } from './users-controller';
 import { successType } from './../types/responses-types';
 import { errorType } from '../types/responses-types';
 import { v4 } from 'uuid'
-import { Company } from '../models/companies-entity';
 import { companyCreate } from './../types/company-type'
 import { AppDataSource } from '../db/data-source'
-import { QueryRunner } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { userCreate } from '../types/users-type';
 
-const companyRepository = AppDataSource.getRepository(Company)
+const companyRepository: Repository<Company> = AppDataSource.getRepository(Company)
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 
 export const createCompany = async (newCompany: companyCreate ): Promise<errorType | successType>=> {
@@ -41,6 +41,18 @@ export const createCompany = async (newCompany: companyCreate ): Promise<errorTy
 
         return {status: 500, detail: `Something went wrong check the server's logs`}
     }
+}
 
+export const getCompany = async (companyUUID: string): Promise<Company | null> => {
+    // return await companyRepository.findOneBy({uuid: companyUUID})
+
+    return companyRepository.createQueryBuilder("company")
+        .select("company.uuid")
+        .addSelect("company.ruc")
+        .addSelect("company.name")
+        .addSelect("company.employees")
+        .where("company.uuid = :uuid")
+        .setParameter("uuid", companyUUID)
+        .getOne()
 }
 

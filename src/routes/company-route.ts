@@ -1,7 +1,8 @@
+import { validateToken } from './../middleware/validateToken';
 import { isEmailValid } from './../middleware/validateEmail';
-import { createCompany } from './../controller/companies-controller';
+import { createCompany, getCompany } from './../controller/companies-controller';
 import express, { Request, Response, Router } from 'express'
-import { companyCreate } from '../types/company-type'
+import { companyCreate, companyResponse } from '../types/company-type'
 
 const router: Router = express.Router()
 
@@ -23,6 +24,14 @@ router.post('/', async (req: Request, res: Response) => {
     const createCompanyResult =  await createCompany(req.body)
 
     return res.status(createCompanyResult.status).json({detail: createCompanyResult.detail})
+})
+
+router.get('/', validateToken, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    
+    const company: companyResponse | null = await getCompany(companyUUID)
+
+    return res.status(200).json({data: company})
 })
 
 export default router

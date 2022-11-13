@@ -17,9 +17,11 @@
   "author": "Andrés Court",
   "license": "ISC",
   "dependencies": {
+    "@types/jsonwebtoken": "^8.5.9",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",

@@ -6,3 +6,9 @@ export type userCreate = {
     name: string
     company: Company
 }
+
+export type userResponse = {
+    email: string,
+    name: string,
+    company: Company
+}
