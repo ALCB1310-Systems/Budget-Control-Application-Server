@@ -35,7 +35,7 @@ export const createCompany = async (newCompany: companyCreate ): Promise<errorTy
     } catch (error: any) {
         await queryRunner.rollbackTransaction()
         if (error.code !== undefined && error.code === '23505' && error.table === 'company') return { status: 409, detail: `Company with name: "${newCompany.name} "or ruc: "${newCompany.ruc}" already exists`}
-        if (error.code !== undefined && error.code === '23505' && error.table === 'user') return { status: 409, detail: `User with name: "${newCompany.fullname} "or ruc: "${newCompany.email}" already exists`}
+        if (error.code !== undefined && error.code === '23505' && error.table === 'user') return { status: 409, detail: `User with name: "${newCompany.fullname} "or email: "${newCompany.email}" already exists`}
 
         console.error(error)
 

@@ -36,7 +36,7 @@ describe(`users routes`, () => {
 		});
 	});
 
-	describe(`Given it sends a correct json`, () => {
+	describe.skip(`Given it sends a correct json`, () => {
 		it(`should return 201`, async () => {
 			const result = await request(app)
 				.post(endpoint)

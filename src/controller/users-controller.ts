@@ -4,10 +4,13 @@ import { User } from "../models/users-entity"
 import { AppDataSource } from "../db/data-source"
 import { userCreate } from "../types/users-type"
 import { hashPassword } from '../middleware/passwordHashing';
+import { Company } from '../models/companies-entity';
+import { errorType, successType } from '../types/responses-types';
 
 const userRepository = AppDataSource.getRepository(User)
+const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 
-export const saveUser =async (newUser:userCreate, queryRunner: QueryRunner) => {
+export const saveUser = async (newUser:userCreate, queryRunner: QueryRunner) => {
     const user = new User()
 
     user.uuid = v4()
@@ -23,5 +26,33 @@ export const saveUser =async (newUser:userCreate, queryRunner: QueryRunner) => {
     } catch (error) {
         throw error
     }
+}
 
+export const createUser = async (newUser:userCreate): Promise<successType | errorType> => {
+    try {
+        await queryRunner.startTransaction()
+
+        const user = await saveUser(newUser, queryRunner)
+
+        await queryRunner.commitTransaction()
+
+        return {status: 201, detail: user}
+    } catch (error: any) {
+        await queryRunner.rollbackTransaction()
+         if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `User with email: "${newUser.email}" already exists`}
+
+         console.error(error)
+         return {status: 500, detail: `Unknown error, please check the logs`}
+    }
+}
+
+export const getTotalUsers = async (company: Company) => {
+    const { totalUsers } = await userRepository
+    .createQueryBuilder("user")
+    .select("COUNT(user.email)", "totalUsers")
+    .where("user.companyUuid = :companyUuid")
+    .setParameter('companyUuid', company.uuid)
+    .getRawOne()
+    
+    return totalUsers
 }
