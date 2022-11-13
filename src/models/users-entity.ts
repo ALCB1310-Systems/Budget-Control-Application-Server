@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, Unique, BaseEntity, ManyToOne, CreateDateColumn, Relation } from 'typeorm'
+import { Entity, Column, PrimaryColumn, Unique, BaseEntity, ManyToOne, CreateDateColumn, Relation, OneToMany } from 'typeorm'
 import { Company } from './companies-entity';
+import { Supplier } from './suppliers-entity';
 
 @Entity()
 @Unique(["email"])
@@ -34,4 +35,7 @@ export class User extends BaseEntity{
         type: 'timestamptz'
     })
     created_at: Date
+
+    @OneToMany(() => Supplier, (supplier) => supplier.user)
+    suppliers: Supplier[]
 }
