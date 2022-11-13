@@ -57,7 +57,7 @@ export const getTotalUsers = async (company: Company) => {
     return totalUsers
 }
 
-export const getAllUsers =async (companyUuid:string): Promise<User[]> => {
+export const getAllUsers = async (companyUuid: string): Promise<User[]> => {
     const users = await userRepository
         .createQueryBuilder("user")
         .select("user.uuid")
@@ -71,7 +71,7 @@ export const getAllUsers =async (companyUuid:string): Promise<User[]> => {
     return users
 }
 
-export const getOneUser =async (userUuid:string, companyUuid: string): Promise<User|null> => {
+export const getOneUser = async (userUuid: string, companyUuid: string): Promise<User|null> => {
     const user = await userRepository
         .createQueryBuilder("user")
         .select("user.uuid")
@@ -85,4 +85,27 @@ export const getOneUser =async (userUuid:string, companyUuid: string): Promise<U
         .getOne()
 
     return user
+}
+
+export const updateUser = async (updatedUserInformation: userCreate, userToUpdate: User): Promise<successType | errorType> => {
+    userToUpdate.email = updatedUserInformation.email ? updatedUserInformation.email : userToUpdate.email
+    userToUpdate.name = updatedUserInformation.name ? updatedUserInformation.name : userToUpdate.name
+
+    if(updatedUserInformation.password) userToUpdate.password = await hashPassword(updatedUserInformation.password)
+
+    try {
+        await queryRunner.startTransaction()
+
+        const user = await queryRunner.manager.save(userToUpdate)
+
+        await queryRunner.commitTransaction()
+
+        return {status: 200, detail: user}
+    } catch (error: any) {
+        await queryRunner.rollbackTransaction()
+         if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `User with email: "${updatedUserInformation.email}" already exists`}
+
+         console.error(error)
+         return {status: 500, detail: `Unknown error, please check the logs`}
+    }
 }

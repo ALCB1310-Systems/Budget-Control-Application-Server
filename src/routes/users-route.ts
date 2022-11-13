@@ -2,7 +2,7 @@ import { validateUUID } from './../middleware/validateUuid';
 import { formatManyUserResponse, formatOneUserResponse } from './../helpers/format';
 import { isPasswordValid } from './../middleware/validatePassword';
 import { isEmailValid } from './../middleware/validateEmail';
-import { getTotalUsers, createUser, getAllUsers, getOneUser } from './../controller/users-controller';
+import { getTotalUsers, createUser, getAllUsers, getOneUser, updateUser } from './../controller/users-controller';
 import { userCreate } from './../types/users-type';
 import { validateToken } from './../middleware/validateToken';
 import express, { Request, Response, Router } from 'express'
@@ -40,7 +40,7 @@ router.post('/', validateToken, async (req: Request, res: Response) => {
     return res.status(createUserResponse.status).json({detail: formatOneUserResponse(createUserResponse.detail, company)})
 })
 
-router.get("/", validateToken,async (req:Request, res: Response) => {
+router.get("/", validateToken,async (req: Request, res: Response) => {
     const { companyUUID } = res.locals.token
 
     // DATA VALIDATION
@@ -69,6 +69,26 @@ router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Resp
     if (!user) return res.status(404).json({detail: `No user found`})
 
     return res.status(200).json({detail: formatOneUserResponse(user, company)})
+})
+
+router.put("/:uuid", validateToken, validateUUID,async (req: Request, res: Response) => {
+    const { companyUUID, userUUID } = res.locals.token
+	const uuid: string = req.params.uuid;
+    
+    const uuidToLook = uuid.toLowerCase() === 'me' ? userUUID : uuid
+
+    // DATA VALIDATION
+    const company: Company | null = await getCompany(companyUUID)
+    if (!company) return res.status(404).json({detail: "Company not found"})
+    //  END OF DATA VALIDATION
+
+    const user = await getOneUser(uuidToLook, companyUUID)
+
+    if (!user) return res.status(404).json({detail: `No user found`})
+
+    const updateUserResponse = await updateUser(req.body, user)
+
+    return res.status(updateUserResponse.status).json({detail: formatOneUserResponse(updateUserResponse.detail, company)})
 })
 
 export default router
