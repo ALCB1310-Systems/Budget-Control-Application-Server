@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, Unique, BaseEntity, ManyToOne, CreateDateColumn } from 'typeorm'
+import { Entity, Column, PrimaryColumn, Unique, BaseEntity, ManyToOne, CreateDateColumn, Relation } from 'typeorm'
 import { Company } from './companies-entity';
 
 @Entity()
@@ -10,7 +10,7 @@ export class User extends BaseEntity{
     uuid: string
 
     @ManyToOne(() => Company, (company) => company.users)
-    company: Company
+    company: Relation<Company>
 
     @Column({
         type: 'character varying',
@@ -19,7 +19,7 @@ export class User extends BaseEntity{
     email: string
 
     @Column({
-        type: "char",
+        type: 'character varying',
         length: 70
     })
     password: string
