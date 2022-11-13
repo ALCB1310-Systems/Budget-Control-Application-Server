@@ -1,6 +1,7 @@
+import { Company } from './../models/companies-entity';
 import { validateToken } from './../middleware/validateToken';
 import { isEmailValid } from './../middleware/validateEmail';
-import { createCompany, getCompany } from './../controller/companies-controller';
+import { createCompany, getCompany, updateCompany } from './../controller/companies-controller';
 import express, { Request, Response, Router } from 'express'
 import { companyCreate, companyResponse } from '../types/company-type'
 
@@ -30,8 +31,25 @@ router.get('/', validateToken, async (req: Request, res: Response) => {
     const { companyUUID } = res.locals.token
     
     const company: companyResponse | null = await getCompany(companyUUID)
-
+    
     return res.status(200).json({data: company})
+})
+
+router.put("/", validateToken,async (req:Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    let { ruc, name, employees }: companyCreate = req.body
+    
+    const company: Company | null = await getCompany(companyUUID)
+    if (!company) return res.status(404).json({detail: `No company found`})
+
+    if(!ruc) ruc = company?.ruc
+    if(!name) name = company?.name
+    if(!employees) employees = company.employees
+
+    const updateCompanyResult = await updateCompany({ruc, name, employees}, company)
+
+    return res.status(updateCompanyResult.status).json({detail: updateCompanyResult.detail})
+    
 })
 
 export default router

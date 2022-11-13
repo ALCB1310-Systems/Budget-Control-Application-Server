@@ -12,7 +12,6 @@ export const validateToken = (req: Request, res: Response, next: NextFunction) =
 
     if (tokenData[0] !== `Bearer`) return res.status(401).json({detail: "Unauthorized"})
 
-    console.log(tokenData[1]);
     try {
         const jwtPayload = <any>jwt.verify(tokenData[1], secretKey)
 
