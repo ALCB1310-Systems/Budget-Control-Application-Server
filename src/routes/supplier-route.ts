@@ -7,7 +7,7 @@ import { isEmailValid } from './../middleware/validateEmail';
 import { validateToken } from './../middleware/validateToken';
 import express, { Request, Response, Router } from "express";
 import { Company } from '../models/companies-entity';
-import { createSupplier } from '../controller/supplier-controller';
+import { createSupplier, getAllSuppliers } from '../controller/supplier-controller';
 
 const router: Router = express.Router()
 
@@ -39,7 +39,11 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
 })
 
 router.get("/", validateToken, async (req: Request, res: Response) => {
-    const { companyUUID, userUUID } = res.locals.token
+    const { companyUUID } = res.locals.token
+
+    const suppliers = await getAllSuppliers(companyUUID)
+
+    return res.status(200).json({detail: suppliers})
 })
 
 export default router

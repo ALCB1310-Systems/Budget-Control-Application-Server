@@ -5,7 +5,7 @@ import { AppDataSource } from "../db/data-source"
 import { Company } from '../models/companies-entity';
 import { Supplier } from '../models/suppliers-entity';
 import { errorType, successType } from '../types/responses-types';
-import { supplierCreate } from '../types/supplier-type';
+import { supplierCreate, supplierResponse } from '../types/supplier-type';
 
 const userRepository = AppDataSource.getRepository(Supplier)
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
@@ -37,4 +37,21 @@ export const createSupplier = async (newSupplier: supplierCreate, company: Compa
 
         return {status: 500, detail: `Unknown error, please check the logs`}
     }
+}
+
+export const getAllSuppliers = async(companyUUID: string): Promise<supplierResponse[]> => {
+    const suppliers = await userRepository
+        .createQueryBuilder("supplier")
+        .select("supplier.uuid")
+        .addSelect("supplier.supplier_id")
+        .addSelect("supplier.name")
+        .addSelect("supplier.contact_name")
+        .addSelect("supplier.contact_email")
+        .addSelect("supplier.contact_phone")
+        .andWhere("supplier.companyUuid = :companyUuid")
+        .setParameter("companyUuid", companyUUID)
+        .orderBy("supplier.name")
+        .getMany()
+
+    return suppliers
 }
