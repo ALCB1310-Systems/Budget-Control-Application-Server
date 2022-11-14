@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryColumn, Unique, BaseEntity, OneToMany, CreateDateColumn } from 'typeorm'
+import { Supplier } from './suppliers-entity';
 import { User } from './users-entity'
 
 @Entity()
@@ -18,12 +19,15 @@ export class Company extends BaseEntity {
 
     @Column({ type: "int"})
     employees: number
-
-    @OneToMany(() => User, (user) => user.company)
-    users: User[]
     
     @CreateDateColumn({
         type: 'timestamptz'
     })
     created_at: Date
+    
+    @OneToMany(() => User, (user) => user.company)
+    users: User[]
+
+    @OneToMany(() => Supplier, (supplier) => supplier.company)
+    suppliers: Supplier[]
 }
