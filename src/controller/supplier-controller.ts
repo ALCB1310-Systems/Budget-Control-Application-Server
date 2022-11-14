@@ -74,3 +74,28 @@ export const getOneSupplier = async (companyUUID: string, supplierUUID: string):
 
     return supplier
 }
+
+export const updateSupplier = async (updatedSupplierInformation: supplierCreate, supplierToUpdate: supplierResponse): Promise<errorType | successType> => {
+
+    supplierToUpdate.supplier_id = updatedSupplierInformation.supplier_id !== null ? updatedSupplierInformation.supplier_id : supplierToUpdate.supplier_id
+    supplierToUpdate.name = updatedSupplierInformation.name !== null ? updatedSupplierInformation.name : supplierToUpdate.name
+    supplierToUpdate.contact_name = updatedSupplierInformation.contact_name !== null ? updatedSupplierInformation.contact_name : supplierToUpdate.contact_email
+    supplierToUpdate.contact_email = updatedSupplierInformation.contact_email !== null ? updatedSupplierInformation.contact_email : supplierToUpdate.contact_email
+    supplierToUpdate.contact_phone = updatedSupplierInformation.contact_phone !== null? updatedSupplierInformation.contact_phone : supplierToUpdate.contact_phone
+
+    try {
+        await queryRunner.startTransaction()
+
+        await queryRunner.manager.save(supplierToUpdate)
+
+        await queryRunner.commitTransaction()
+
+        return {status: 200, detail: supplierToUpdate}
+    } catch (error: any) {
+        await queryRunner.rollbackTransaction()
+         if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `Supplier with id: "${updatedSupplierInformation.supplier_id}" or name: "${updatedSupplierInformation.name}" already exists`}
+
+         console.error(error)
+         return {status: 500, detail: `Unknown error, please check the logs`}
+    }
+}

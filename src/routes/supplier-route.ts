@@ -9,7 +9,7 @@ import { isEmailValid } from './../middleware/validateEmail';
 import { validateToken } from './../middleware/validateToken';
 import express, { Request, Response, Router } from "express";
 import { Company } from '../models/companies-entity';
-import { createSupplier, getAllSuppliers, getOneSupplier } from '../controller/supplier-controller';
+import { createSupplier, getAllSuppliers, getOneSupplier, updateSupplier } from '../controller/supplier-controller';
 
 const router: Router = express.Router()
 
@@ -51,12 +51,25 @@ router.get("/", validateToken, async (req: Request, res: Response) => {
 router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Response) => {
     const { companyUUID } = res.locals.token
     const { uuid } = req.params
-
+    
     const supplier: supplierResponse | null = await getOneSupplier(companyUUID, uuid)
+    
+    if (!supplier) return res.status(404).json({detail: `Supplier with uuid: ${uuid} does not exist`})
+    
+    return res.status(200).json({detail: supplier})
+})
 
+router.put("/:uuid", validateToken, validateUUID, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    const { uuid } = req.params
+    
+    const supplier: supplierResponse | null = await getOneSupplier(companyUUID, uuid)
+    
     if (!supplier) return res.status(404).json({detail: `Supplier with uuid: ${uuid} does not exist`})
 
-    return res.status(200).json({detail: supplier})
+    const updatedSupplierResponse = await updateSupplier(req.body, supplier)
+
+    return res.status(updatedSupplierResponse.status).json({detail: updatedSupplierResponse.detail})
 })
 
 export default router
