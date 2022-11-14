@@ -1,3 +1,5 @@
+import { supplierResponse } from './../types/supplier-type';
+import { Supplier } from './../models/suppliers-entity';
 import { userResponse } from './../types/users-type';
 import { Company } from "../models/companies-entity";
 import { User } from "../models/users-entity";
@@ -16,5 +18,16 @@ export const formatOneUserResponse = (user: User, company: Company): userRespons
         email: user.email,
         name: user.name,
         company: company
+    }
+}
+
+export const formatOneSupplierResponse = (supplier: Supplier): supplierResponse => {
+    return {
+        uuid: supplier.uuid,
+        supplier_id: supplier.supplier_id,
+        name: supplier.name,
+        contact_name: supplier.contact_name,
+        contact_email: supplier.contact_email,
+        contact_phone: supplier.contact_phone
     }
 }
