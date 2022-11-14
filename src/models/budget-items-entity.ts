@@ -40,7 +40,7 @@ export class BudgetItem extends BaseEntity{
     parent: Relation<BudgetItem> | null
 
     @ManyToOne(() => Company, (company) => company.budgetItems, { nullable: false })
-    company: Relation<Company>
+    company: Company
 
     @ManyToOne(() => User, (user) => user.budgetItems, { nullable: false })
     user: Relation<User>

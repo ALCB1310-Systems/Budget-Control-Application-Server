@@ -7,6 +7,7 @@ import { BudgetItem } from '../models/budget-items-entity';
 import { Company } from '../models/companies-entity';
 import { User } from '../models/users-entity';
 import { budgetItemCreate } from './../types/budget-items-type';
+import { debug } from 'console';
 
 const budgetItemRepository: Repository<BudgetItem> = AppDataSource.getRepository(BudgetItem)
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
@@ -19,7 +20,7 @@ export const createBudgetItem = async (newBudgetItem: budgetItemCreate, company:
     budgetItem.name = newBudgetItem.name
     budgetItem.accumulates = newBudgetItem.accumulates
     budgetItem.level = newBudgetItem.level
-    budgetItem.parent = newBudgetItem ? await getOneBudgetItem(newBudgetItem.parentUuid, company.uuid) :  null
+    budgetItem.parent = newBudgetItem.parentUuid ? await getOneBudgetItem(newBudgetItem.parentUuid, company) :  null
     budgetItem.company = company
     budgetItem.user = user
 
@@ -39,15 +40,21 @@ export const createBudgetItem = async (newBudgetItem: budgetItemCreate, company:
 }
 
 
-export const getOneBudgetItem = async (parentUUID: string, company: string): Promise<BudgetItem | null> => {
-    const budgetItem = await budgetItemRepository
+export const getOneBudgetItem = async (parentUUID: string, company: Company): Promise<BudgetItem | null> => {
+    const budgetItem = await budgetItemRepository//.findOneBy({company: company, uuid: parentUUID})
         .createQueryBuilder("budgetItem")
-        .select("*")
+        .select("budgetItem.uuid")
+        .addSelect("budgetItem.code")
+        .addSelect("budgetItem.name")
+        .addSelect("budgetItem.accumulates")
+        .addSelect("budgetItem.level")
+        .addSelect("budgetItem.parentUuid")
         .andWhere("budgetItem.uuid = :uuid")
-        .andWhere("budgetItem.companyUuid: companyUuid")
+        .andWhere("budgetItem.companyUuid = :companyUuid")
         .setParameter("uuid", parentUUID)
-        .setParameter("companyUuid", company)
+        .setParameter("companyUuid", company.uuid)
         .getOne()
-
+    
+    debug(budgetItem)
     return budgetItem
 }

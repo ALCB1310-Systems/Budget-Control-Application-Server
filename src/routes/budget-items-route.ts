@@ -12,7 +12,7 @@ const router: Router = Router()
 router.post("/", validateToken, async (req: Request, res: Response) => {
     const { userUUID, companyUUID } = res.locals.token
 
-    const { code, name, accumulates, level, parent_id } = req.body
+    const { code, name, accumulates, level, parentUuid } = req.body
 
     // DATA VALIDATION BEGIN
     if (!code) return res.status(400).json({detail: "The budget item code is a required field"})
@@ -21,7 +21,7 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
     if (typeof accumulates !== 'boolean') return res.status(400).json({detail: "The accumulate field must be true or false"})
     if (level === undefined) return res.status(400).json({detail: "You must define in what level the budget item is"})
     if (typeof level !== 'number') return res.status(400).json({detail: "The level must be a number"})
-    if (parent_id && !isValidUUID(parent_id)) return res.status(400).json({detail: "Please provide a valid UUID for the parent"})
+    if (parentUuid && !isValidUUID(parentUuid)) return res.status(400).json({detail: "Please provide a valid UUID for the parent"})
 
     const company: Company|null = await getCompany(companyUUID)
     if (!company) return res.status(404).json({detail: `No company found with your logged in information`})
