@@ -1,8 +1,10 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation, Unique } from "typeorm";
 import { Company } from "./companies-entity";
 import { User } from "./users-entity";
 
 @Entity()
+@Unique(["company", "code"])
+@Unique(["company", "name"])
 export class BudgetItem extends BaseEntity{
     @PrimaryColumn({
         type: "uuid"
@@ -34,12 +36,12 @@ export class BudgetItem extends BaseEntity{
     @OneToMany(() => BudgetItem, (budgetItem) => budgetItem.parent)
     childs: BudgetItem[]
 
-    @ManyToOne(() => BudgetItem, (BudgetItem) => BudgetItem.childs)
+    @ManyToOne(() => BudgetItem, (BudgetItem) => BudgetItem.childs, { nullable: true })
     parent: Relation<BudgetItem>
 
-    @ManyToOne(() => Company, (company) => company.budgetItems)
+    @ManyToOne(() => Company, (company) => company.budgetItems, { nullable: false })
     company: Relation<Company>
 
-    @ManyToOne(() => User, (user) => user.budgetItems)
+    @ManyToOne(() => User, (user) => user.budgetItems, { nullable: false })
     user: Relation<User>
 }
