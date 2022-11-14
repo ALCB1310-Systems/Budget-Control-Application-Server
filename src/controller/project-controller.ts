@@ -67,3 +67,25 @@ export const getOneProject = async (projectUUID: string, companyUUID: string): P
     
     return project
 }
+
+export const updateProject = async (updateProjectInformation: projectCreate, projectToUpdate: projectResponse): Promise<errorType|successType> => {
+    projectToUpdate.name = updateProjectInformation.name ? updateProjectInformation.name : projectToUpdate.name
+    projectToUpdate.is_active = projectToUpdate.is_active !== undefined ? updateProjectInformation.is_active : projectToUpdate.is_active
+
+    try {
+        await queryRunner.startTransaction()
+
+        await queryRunner.manager.save(projectToUpdate)
+
+        await queryRunner.commitTransaction()
+
+        return {status: 201, detail: projectToUpdate}
+    } catch (error: any) {
+        await queryRunner.rollbackTransaction()
+        if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `Project with name: "${updateProjectInformation.name}" already exists`}
+
+        console.error(error);
+
+        return {status: 500, detail: `Unknown error, please check the logs`}
+    }
+}
