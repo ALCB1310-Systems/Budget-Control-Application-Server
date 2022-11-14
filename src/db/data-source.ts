@@ -4,6 +4,7 @@ import { DataSource } from "typeorm"
 import { Company } from "../models/companies-entity"
 import { User } from "../models/users-entity";
 import { Supplier } from '../models/suppliers-entity';
+import { Project } from '../models/projects-entity';
 
 export const AppDataSource: DataSource = new DataSource({
     type: `postgres`,
@@ -16,7 +17,8 @@ export const AppDataSource: DataSource = new DataSource({
     entities: [
         Company,
         User, 
-        Supplier
+        Supplier,
+        Project
     ],
 })
 
