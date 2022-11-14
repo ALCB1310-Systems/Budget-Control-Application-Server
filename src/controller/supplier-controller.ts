@@ -39,7 +39,7 @@ export const createSupplier = async (newSupplier: supplierCreate, company: Compa
     }
 }
 
-export const getAllSuppliers = async(companyUUID: string): Promise<supplierResponse[]> => {
+export const getAllSuppliers = async (companyUUID: string): Promise<supplierResponse[]> => {
     const suppliers = await userRepository
         .createQueryBuilder("supplier")
         .select("supplier.uuid")
@@ -54,4 +54,23 @@ export const getAllSuppliers = async(companyUUID: string): Promise<supplierRespo
         .getMany()
 
     return suppliers
+}
+
+export const getOneSupplier = async (companyUUID: string, supplierUUID: string): Promise<supplierResponse | null> => {
+    const supplier = await userRepository
+        .createQueryBuilder("supplier")
+        .select("supplier.uuid")
+        .addSelect("supplier.supplier_id")
+        .addSelect("supplier.name")
+        .addSelect("supplier.contact_name")
+        .addSelect("supplier.contact_email")
+        .addSelect("supplier.contact_phone")
+        .andWhere("supplier.companyUuid = :companyUuid")
+        .andWhere("supplier.uuid = :supplierUUID")
+        .setParameter("companyUuid", companyUUID)
+        .setParameter("supplierUUID", supplierUUID)
+        .orderBy("supplier.name")
+        .getOne()
+
+    return supplier
 }
