@@ -8,27 +8,27 @@ export class Project extends BaseEntity {
     @PrimaryColumn({
         type: "uuid"
     })
-    uuid: string
+    uuid!: string
 
     @Column({
         type: "character varying",
         length: 255
     })
-    name: string
+    name!: string
 
     @Column({
         type: "boolean"
     })
-    is_active: boolean
+    is_active!: boolean
 
     @ManyToOne(() => Company, (company) => company.projects)
-    company: Relation<Company>
+    company!: Relation<Company>
 
     @ManyToOne(() => User, (user) => user.projects)
-    user: Relation<User>
+    user!: Relation<User>
 
     @CreateDateColumn({
         type: 'timestamptz'
     })
-    created_at: Date
+    created_at!: Date
 }

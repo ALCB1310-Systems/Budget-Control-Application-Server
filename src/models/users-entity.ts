@@ -10,40 +10,40 @@ export class User extends BaseEntity{
     @PrimaryColumn({
         type: "uuid"
     })
-    uuid: string
+    uuid!: string
 
     @ManyToOne(() => Company, (company) => company.users)
-    company: Relation<Company>
+    company!: Relation<Company>
 
     @Column({
         type: 'character varying',
         length: 255
     })
-    email: string
+    email!: string
 
     @Column({
         type: 'character varying',
         length: 70
     })
-    password: string
+    password!: string
 
     @Column({
         type: 'character varying',
         length: 255
     })
-    name: string
+    name!: string
 
     @CreateDateColumn({
         type: 'timestamptz'
     })
-    created_at: Date
+    created_at!: Date
 
     @OneToMany(() => Supplier, (supplier) => supplier.user)
-    suppliers: Supplier[]
+    suppliers!: Supplier[]
 
     @OneToMany(() => Project, (project) => project.user)
-    projects: Project[]
+    projects!: Project[]
 
     @OneToMany(() => BudgetItem, (budgetItem) => budgetItem.user)
-    budgetItems: BudgetItem[]
+    budgetItems!: BudgetItem[]
 }

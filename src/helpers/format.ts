@@ -1,3 +1,5 @@
+import { budgetItemResponse } from './../types/budget-items-type';
+import { BudgetItem } from './../models/budget-items-entity';
 import { projectResponse } from './../types/project-type';
 import { supplierResponse } from './../types/supplier-type';
 import { Supplier } from './../models/suppliers-entity';
@@ -39,5 +41,16 @@ export const formatOneProjectResponse = (project: Project): projectResponse => {
         uuid: project.uuid,
         name: project.name,
         is_active: project.is_active
+    }
+}
+
+export const formatOneBudgetItemResponse = (budgetItem: BudgetItem): budgetItemResponse => {
+    return {
+        uuid: budgetItem.uuid,
+        code: budgetItem.code,
+        name: budgetItem.name,
+        accumulates: budgetItem.accumulates,
+        level: budgetItem.level,
+        parentUuid: budgetItem.parent?.uuid
     }
 }

@@ -11,31 +11,31 @@ export class Company extends BaseEntity {
     @PrimaryColumn({
         type: 'uuid'
     })
-    uuid: string
+    uuid!: string
 
     @Column()
-    ruc: string
+    ruc!: string
 
     @Column()
-    name: string
+    name!: string
 
     @Column({ type: "int"})
-    employees: number
+    employees!: number
     
     @CreateDateColumn({
         type: 'timestamptz'
     })
-    created_at: Date
+    created_at!: Date
     
     @OneToMany(() => User, (user) => user.company)
-    users: User[]
+    users!: User[]
 
     @OneToMany(() => Supplier, (supplier) => supplier.company)
-    suppliers: Supplier[]
+    suppliers!: Supplier[]
 
     @OneToMany(() => Project, (project) => project.company)
-    projects: Project[]
+    projects!: Project[]
 
     @OneToMany(() => BudgetItem, (budgetItem) => budgetItem.company)
-    budgetItems: BudgetItem[]
+    budgetItems!: BudgetItem[]
 }
