@@ -7,7 +7,7 @@ import { Supplier } from '../models/suppliers-entity';
 import { errorType, successType } from '../types/responses-types';
 import { supplierCreate, supplierResponse } from '../types/supplier-type';
 
-const userRepository = AppDataSource.getRepository(Supplier)
+const supplierRepository = AppDataSource.getRepository(Supplier)
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 
 export const createSupplier = async (newSupplier: supplierCreate, company: Company, user: User): Promise<errorType | successType> => {
@@ -40,7 +40,7 @@ export const createSupplier = async (newSupplier: supplierCreate, company: Compa
 }
 
 export const getAllSuppliers = async (companyUUID: string): Promise<supplierResponse[]> => {
-    const suppliers = await userRepository
+    const suppliers = await supplierRepository
         .createQueryBuilder("supplier")
         .select("supplier.uuid")
         .addSelect("supplier.supplier_id")
@@ -57,7 +57,7 @@ export const getAllSuppliers = async (companyUUID: string): Promise<supplierResp
 }
 
 export const getOneSupplier = async (companyUUID: string, supplierUUID: string): Promise<supplierResponse | null> => {
-    const supplier = await userRepository
+    const supplier = await supplierRepository
         .createQueryBuilder("supplier")
         .select("supplier.uuid")
         .addSelect("supplier.supplier_id")

@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryColumn, Unique, BaseEntity, OneToMany, CreateDateColumn } from 'typeorm'
+import { Project } from './projects-entity';
 import { Supplier } from './suppliers-entity';
 import { User } from './users-entity'
 
@@ -30,4 +31,7 @@ export class Company extends BaseEntity {
 
     @OneToMany(() => Supplier, (supplier) => supplier.company)
     suppliers: Supplier[]
+
+    @OneToMany(() => Project, (project) => project.company)
+    projects: Project[]
 }
