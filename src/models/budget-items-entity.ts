@@ -9,44 +9,44 @@ export class BudgetItem extends BaseEntity{
     @PrimaryColumn({
         type: "uuid"
     })
-    uuid!: string
+    uuid: string
 
     @Column({
         type: "character varying",
         length: 50
     })
-    code!: string
+    code: string
 
     @Column({
         type: "character varying",
         length: 255
     })
-    name!: string
+    name: string
 
     @Column({
         type: "boolean"
     })
-    accumulates!: boolean
+    accumulates: boolean
 
     @Column({
         type: "int"
     })
-    level!: number
+    level: number
 
     @OneToMany(() => BudgetItem, (budgetItem) => budgetItem.parent)
-    childs!: BudgetItem[]
+    childs: BudgetItem[]
 
     @ManyToOne(() => BudgetItem, (BudgetItem) => BudgetItem.childs, { nullable: true })
-    parent!: Relation<BudgetItem> | null
+    parent: Relation<BudgetItem> | null
 
     @ManyToOne(() => Company, (company) => company.budgetItems, { nullable: false })
-    company!: Relation<Company>
+    company: Relation<Company>
 
     @ManyToOne(() => User, (user) => user.budgetItems, { nullable: false })
-    user!: Relation<User>
+    user: Relation<User>
 
     @CreateDateColumn({
         type: 'timestamptz'
     })
-    created_at!: Date
+    created_at: Date
 }
