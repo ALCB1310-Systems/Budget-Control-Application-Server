@@ -89,3 +89,27 @@ const getParentBudgetItem = async (parentUUID: string, company: Company): Promis
     
     return budgetItem
 }
+
+export const updateBudgetItem = async (updatedBudgetItemInformation: budgetItemCreate, budgetItemToUpdate: BudgetItem, company: Company): Promise<errorType|successType> => {
+    budgetItemToUpdate.code = updatedBudgetItemInformation.code ? updatedBudgetItemInformation.code : budgetItemToUpdate.code
+    budgetItemToUpdate.name = updatedBudgetItemInformation.name ? updatedBudgetItemInformation.name : budgetItemToUpdate.name
+    budgetItemToUpdate.accumulates = updatedBudgetItemInformation.accumulates === undefined ? updatedBudgetItemInformation.accumulates : budgetItemToUpdate.accumulates
+    budgetItemToUpdate.level = updatedBudgetItemInformation.level ? updatedBudgetItemInformation.level : budgetItemToUpdate.level
+    const parentBudget = updatedBudgetItemInformation.parentUuid ? await getParentBudgetItem(updatedBudgetItemInformation.parentUuid, company) : budgetItemToUpdate.parent
+
+    budgetItemToUpdate.parent = parentBudget
+
+    try {
+        await queryRunner.startTransaction()
+        await queryRunner.manager.save(budgetItemToUpdate)
+        await queryRunner.commitTransaction()
+
+        return {status: 201, detail: formatOneBudgetItemResponse(budgetItemToUpdate)}
+    } catch (error: any) {
+        await queryRunner.rollbackTransaction()
+         if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `Budget item with code: "${budgetItemToUpdate.code}" or name: "${budgetItemToUpdate.name}" already exists`}
+
+         console.error(error)
+         return {status: 500, detail: `Unknown error, please check the logs`}
+    }
+}

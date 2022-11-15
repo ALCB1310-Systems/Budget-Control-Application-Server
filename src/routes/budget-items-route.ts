@@ -1,5 +1,5 @@
 import { validateUUID } from './../middleware/validateUuid';
-import { createBudgetItem, getAllBudgetItems, getOneBudgetItem } from './../controller/budget-items-controller';
+import { createBudgetItem, getAllBudgetItems, getOneBudgetItem, updateBudgetItem } from './../controller/budget-items-controller';
 import { getOneUser } from './../controller/users-controller';
 import { validateToken } from './../middleware/validateToken';
 import { Request, Response, Router } from "express";
@@ -51,6 +51,21 @@ router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Resp
     const budgetItemResponseData = await getOneBudgetItem(budgetItemUUID, companyUUID)
 
     return res.status(budgetItemResponseData.status).json({detail: budgetItemResponseData.detail})
+})
+
+router.put("/:uuid", validateToken, validateUUID,async (req:Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    const budgetItemUUID = req.params.uuid
+
+    const company = await getCompany(companyUUID)
+    if (!company) return res.status(404).json({detail: "Company not found"})
+
+    const budgetItemToUpdate = await getOneBudgetItem(budgetItemUUID, companyUUID)
+
+    if (budgetItemToUpdate.status !== 200) return res.status(budgetItemToUpdate.status).json({detail: budgetItemToUpdate.detail})
+
+    const updatedBudgetItemResponse = await updateBudgetItem(req.body, budgetItemToUpdate.detail, company)
+    return res.status(updatedBudgetItemResponse.status).json({detail: updatedBudgetItemResponse.detail})
 })
 
 export default router

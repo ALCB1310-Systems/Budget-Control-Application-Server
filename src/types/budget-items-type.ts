@@ -26,6 +26,7 @@ export type budgetItemGetResponse = {
         code: string,
         name: string,
         accumulates: boolean,
-        level: number
+        level: number,
+        parentUuid: string | null | undefined
     } | null
 }

@@ -61,7 +61,8 @@ export const formatGetOneBudgetItemResponse = (budgetItem: BudgetItem): budgetIt
             code: budgetItem.parent?.code,
             name: budgetItem.parent?.name,
             accumulates: budgetItem.parent?.accumulates,
-            level: budgetItem.parent?.level
+            level: budgetItem.parent?.level,
+            parentUuid: null
         } : null
 
     return {
