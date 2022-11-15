@@ -14,3 +14,18 @@ export type budgetItemResponse = {
     level: number,
     parentUuid: string | undefined | null
 }
+
+export type budgetItemGetResponse = {
+    uuid: string,
+    code: string,
+    name: string,
+    accumulates: boolean,
+    level: number,
+    parent: {
+        uuid: string,
+        code: string,
+        name: string,
+        accumulates: boolean,
+        level: number
+    } | null
+}

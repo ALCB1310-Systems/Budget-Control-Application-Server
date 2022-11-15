@@ -1,4 +1,5 @@
-import { createBudgetItem } from './../controller/budget-items-controller';
+import { validateUUID } from './../middleware/validateUuid';
+import { createBudgetItem, getAllBudgetItems, getOneBudgetItem } from './../controller/budget-items-controller';
 import { getOneUser } from './../controller/users-controller';
 import { validateToken } from './../middleware/validateToken';
 import { Request, Response, Router } from "express";
@@ -33,6 +34,23 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
     const newBudgetItemResponse = await createBudgetItem(req.body, company, user)
 
     return res.status(newBudgetItemResponse.status).json({detail: newBudgetItemResponse.detail})
+})
+
+router.get("/", validateToken, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+
+    const budgetItemsResponseData = await getAllBudgetItems(companyUUID)
+
+    return res.status(200).json({detail: budgetItemsResponseData})
+})
+
+router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    const budgetItemUUID = req.params.uuid
+
+    const budgetItemResponseData = await getOneBudgetItem(budgetItemUUID, companyUUID)
+
+    return res.status(budgetItemResponseData.status).json({detail: budgetItemResponseData.detail})
 })
 
 export default router

@@ -1,4 +1,5 @@
-import { formatOneBudgetItemResponse } from './../helpers/format';
+import { getCompany } from './companies-controller';
+import { formatManyBudgetItemsResponse, formatOneBudgetItemResponse } from './../helpers/format';
 import { errorType, successType } from './../types/responses-types';
 import { QueryRunner, Repository } from 'typeorm';
 import { v4 } from 'uuid';
@@ -6,7 +7,7 @@ import { AppDataSource } from '../db/data-source';
 import { BudgetItem } from '../models/budget-items-entity';
 import { Company } from '../models/companies-entity';
 import { User } from '../models/users-entity';
-import { budgetItemCreate } from './../types/budget-items-type';
+import { budgetItemCreate, budgetItemGetResponse } from './../types/budget-items-type';
 import { debug } from 'console';
 
 const budgetItemRepository: Repository<BudgetItem> = AppDataSource.getRepository(BudgetItem)
@@ -20,7 +21,7 @@ export const createBudgetItem = async (newBudgetItem: budgetItemCreate, company:
     budgetItem.name = newBudgetItem.name
     budgetItem.accumulates = newBudgetItem.accumulates
     budgetItem.level = newBudgetItem.level
-    budgetItem.parent = newBudgetItem.parentUuid ? await getOneBudgetItem(newBudgetItem.parentUuid, company) :  null
+    budgetItem.parent = newBudgetItem.parentUuid ? await getParentBudgetItem(newBudgetItem.parentUuid, company) :  null
     budgetItem.company = company
     budgetItem.user = user
 
@@ -39,9 +40,40 @@ export const createBudgetItem = async (newBudgetItem: budgetItemCreate, company:
     }
 }
 
+export const getAllBudgetItems = async (companyUuid: string): Promise<budgetItemGetResponse[]> => {
+    const company = await getCompany(companyUuid)
+    if (!company) throw new Error("couldn't get the company")
+    const budgetItems = await budgetItemRepository
+        .createQueryBuilder("budgetItem")
+        .leftJoinAndSelect("budgetItem.parent", "parent")
+        .andWhere("budgetItem.companyUuid = :companyUuid")
+        .setParameter("companyUuid", companyUuid)
+        .getMany()
 
-export const getOneBudgetItem = async (parentUUID: string, company: Company): Promise<BudgetItem | null> => {
-    const budgetItem = await budgetItemRepository//.findOneBy({company: company, uuid: parentUUID})
+    const formattedBudgetItems = formatManyBudgetItemsResponse(budgetItems)
+
+    return formattedBudgetItems
+}
+
+export const getOneBudgetItem = async (budgetItemUuid: string, companyUuid: string): Promise<errorType | successType> => {
+    const company = await getCompany(companyUuid)
+    if (!company) throw new Error("couldn't get the company")
+    const budgetItem = await budgetItemRepository
+        .createQueryBuilder("budgetItem")
+        .leftJoinAndSelect("budgetItem.parent", "parent")
+        .andWhere("budgetItem.companyUuid = :companyUuid")
+        .andWhere("budgetItem.uuid = :budgetItemUuid")
+        .setParameter("companyUuid", companyUuid)
+        .setParameter("budgetItemUuid", budgetItemUuid)
+        .getOne()
+
+    if (!budgetItem) return {status: 404, detail: `No budget item with uuid: ${budgetItemUuid}`}
+
+    return { status: 200, detail: budgetItem }
+}
+
+const getParentBudgetItem = async (parentUUID: string, company: Company): Promise<BudgetItem | null> => {
+    const budgetItem = await budgetItemRepository
         .createQueryBuilder("budgetItem")
         .select("budgetItem.uuid")
         .addSelect("budgetItem.code")
@@ -55,6 +87,5 @@ export const getOneBudgetItem = async (parentUUID: string, company: Company): Pr
         .setParameter("companyUuid", company.uuid)
         .getOne()
     
-    debug(budgetItem)
     return budgetItem
 }

@@ -1,4 +1,4 @@
-import { budgetItemResponse } from './../types/budget-items-type';
+import { budgetItemResponse, budgetItemGetResponse } from './../types/budget-items-type';
 import { BudgetItem } from './../models/budget-items-entity';
 import { projectResponse } from './../types/project-type';
 import { supplierResponse } from './../types/supplier-type';
@@ -53,4 +53,29 @@ export const formatOneBudgetItemResponse = (budgetItem: BudgetItem): budgetItemR
         level: budgetItem.level,
         parentUuid: budgetItem.parent?.uuid
     }
+}
+
+export const formatGetOneBudgetItemResponse = (budgetItem: BudgetItem): budgetItemGetResponse => {
+    const parent = budgetItem.parent ? {
+            uuid: budgetItem.parent?.uuid,
+            code: budgetItem.parent?.code,
+            name: budgetItem.parent?.name,
+            accumulates: budgetItem.parent?.accumulates,
+            level: budgetItem.parent?.level
+        } : null
+
+    return {
+        uuid: budgetItem.uuid,
+        code: budgetItem.code,
+        name: budgetItem.name,
+        accumulates: budgetItem.accumulates,
+        level: budgetItem.level,
+        parent
+    }
+}
+
+export const formatManyBudgetItemsResponse = (budgetItems: BudgetItem[]): budgetItemGetResponse[] => {
+    const formattedBudgetItems = budgetItems.map( budgetItem => formatGetOneBudgetItemResponse(budgetItem))
+
+    return formattedBudgetItems
 }
