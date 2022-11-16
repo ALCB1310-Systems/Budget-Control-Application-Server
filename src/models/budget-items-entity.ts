@@ -1,4 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation, Unique } from "typeorm";
+import { Budget } from "./budget-entity";
 import { Company } from "./companies-entity";
 import { User } from "./users-entity";
 
@@ -49,4 +50,7 @@ export class BudgetItem extends BaseEntity{
         type: 'timestamptz'
     })
     created_at: Date
+
+    @OneToMany(() => Budget, (budget) => budget.budgetItem)
+    budgets: Budget[]
 }
