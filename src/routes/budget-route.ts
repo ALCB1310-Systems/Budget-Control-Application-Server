@@ -1,4 +1,5 @@
-import { createNewBudget } from './../controller/budget-controller';
+import { formatManyBudgetResponse } from './../helpers/format';
+import { createNewBudget, getAllBudgets } from './../controller/budget-controller';
 import { budgetCreate } from './../types/budget-type';
 import { getOneProject } from './../controller/project-controller';
 import { getCompany } from './../controller/companies-controller';
@@ -45,6 +46,20 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
     const newBudgetResponse = await createNewBudget(newBudget)
 
     return res.status(newBudgetResponse.status).json({detail: newBudgetResponse.detail})
+})
+
+router.get("/", validateToken, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    const job = req.query.job
+
+    if (job && typeof job !== 'string') return res.status(400).json({detail: `Job uuid is not valid`})
+    if (job && !isValidUUID(job)) return res.status(400).json({detail: `Job uuid is not valid`})
+
+    const budgets = await getAllBudgets(companyUUID, job)
+
+    const formattedBudget = formatManyBudgetResponse(budgets)
+
+    return res.status(200).json({detail: formattedBudget})
 })
 
 export default router

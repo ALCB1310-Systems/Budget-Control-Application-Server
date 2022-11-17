@@ -121,6 +121,9 @@ const budgetExists = async (budgetData: budgetCreate, deb: boolean): Promise<Bud
 export const getAllBudgets = async (companyUUID: string, projectUUID: string | null = null): Promise<Budget[]> => {
     let budgets: SelectQueryBuilder<Budget> = budgetRepository
         .createQueryBuilder("budget")
+        .leftJoinAndSelect("budget.project", "project")
+        .leftJoinAndSelect("budget.budgetItem", "budgetItem")
+        .leftJoinAndSelect("budgetItem.parent", "parent")
         .andWhere("budget.companyUuid = :company")
         .setParameter("company", companyUUID)
 
@@ -129,7 +132,10 @@ export const getAllBudgets = async (companyUUID: string, projectUUID: string | n
             .setParameter("project",projectUUID)
     }
 
-    const budgetsResults: Budget[] = await budgets.getMany()
+    const budgetsResults: Budget[] = await budgets
+        .addOrderBy("project.name")
+        .addOrderBy("budgetItem.code")
+        .getMany()
 
     return budgetsResults
 }
