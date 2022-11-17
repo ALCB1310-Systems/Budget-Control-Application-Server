@@ -52,7 +52,7 @@ export const getAllProjects = async (companyUUID: string): Promise<projectRespon
     return projects
 }
 
-export const getOneProject = async (projectUUID: string, companyUUID: string): Promise<projectResponse | null> => {
+export const getOneProject = async (projectUUID: string, companyUUID: string): Promise<Project | null> => {
     const project = projectRepository
         .createQueryBuilder("project")
         .select("project.uuid")

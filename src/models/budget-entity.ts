@@ -28,51 +28,51 @@ export class Budget extends BaseEntity {
         type: "float",
         nullable: true
     })
-    initial_quantity: Number
+    initial_quantity: number | null
 
     @Column({
         type: "float",
         nullable: true
     })
-    initial_cost: Number
+    initial_cost: number | null
 
     @Column({
         type: "float"
     })
-    initial_total: Number
+    initial_total: number
 
     @Column({
         type: "float",
         nullable: true
     })
-    spent_quantity: Number
+    spent_quantity: number | null
 
     @Column({
         type: "float"
     })
-    spent_total: Number
+    spent_total: number
 
     @Column({
         type: "float",
         nullable: true
     })
-    to_spend_quantity: Number
+    to_spend_quantity: number | null
 
     @Column({
         type: "float",
         nullable: true
     })
-    to_spend_cost: Number
+    to_spend_cost: number | null
 
     @Column({
         type: "float"
     })
-    to_spend_total: Number
+    to_spend_total: number
 
     @Column({
         type: "float"
     })
-    updated_budget: Number
+    updated_budget: number
 
     @CreateDateColumn({
         type: 'timestamptz'

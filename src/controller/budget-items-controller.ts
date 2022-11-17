@@ -8,7 +8,6 @@ import { BudgetItem } from '../models/budget-items-entity';
 import { Company } from '../models/companies-entity';
 import { User } from '../models/users-entity';
 import { budgetItemCreate, budgetItemGetResponse } from './../types/budget-items-type';
-import { debug } from 'console';
 
 const budgetItemRepository: Repository<BudgetItem> = AppDataSource.getRepository(BudgetItem)
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
