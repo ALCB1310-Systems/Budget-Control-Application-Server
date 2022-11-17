@@ -1,3 +1,4 @@
+import { formatOneBudgetResponse } from './../helpers/format';
 import { getOneBudgetItem } from './budget-items-controller';
 import { errorType, successType } from './../types/responses-types';
 import { getOneProject } from './project-controller';
@@ -138,4 +139,21 @@ export const getAllBudgets = async (companyUUID: string, projectUUID: string | n
         .getMany()
 
     return budgetsResults
+}
+
+export const getOneBudget = async (budgetUUID: string, companyUUID: string): Promise<errorType | successType> => {
+    let budget: Budget | null = await budgetRepository
+        .createQueryBuilder("budget")
+        .leftJoinAndSelect("budget.project", "project")
+        .leftJoinAndSelect("budget.budgetItem", "budgetItem")
+        .leftJoinAndSelect("budgetItem.parent", "parent")
+        .andWhere("budget.companyUuid = :company")
+        .andWhere("budget.uuid = :uuid")
+        .setParameter("company", companyUUID)
+        .setParameter("uuid", budgetUUID)
+        .getOne()
+
+    if (!budget) return {status: 404, detail: `Budget with uuid ${budgetUUID} does not exist`}
+
+    return {status: 200, detail: formatOneBudgetResponse(budget)}
 }

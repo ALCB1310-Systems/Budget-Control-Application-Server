@@ -1,5 +1,6 @@
+import { validateUUID } from './../middleware/validateUuid';
 import { formatManyBudgetResponse } from './../helpers/format';
-import { createNewBudget, getAllBudgets } from './../controller/budget-controller';
+import { createNewBudget, getAllBudgets, getOneBudget } from './../controller/budget-controller';
 import { budgetCreate } from './../types/budget-type';
 import { getOneProject } from './../controller/project-controller';
 import { getCompany } from './../controller/companies-controller';
@@ -60,6 +61,16 @@ router.get("/", validateToken, async (req: Request, res: Response) => {
     const formattedBudget = formatManyBudgetResponse(budgets)
 
     return res.status(200).json({detail: formattedBudget})
+})
+
+router.get("/:uuid", validateToken, validateUUID, async(req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+
+    const budgetUUID = req.params.uuid
+
+    const budget = await getOneBudget(budgetUUID, companyUUID)
+
+    return res.status(budget.status).json({detail: budget.detail})
 })
 
 export default router
