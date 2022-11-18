@@ -51,12 +51,12 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
 
 router.get("/", validateToken, async (req: Request, res: Response) => {
     const { companyUUID } = res.locals.token
-    const job = req.query.job
+    const project = req.query.project
 
-    if (job && typeof job !== 'string') return res.status(400).json({detail: `Job uuid is not valid`})
-    if (job && !isValidUUID(job)) return res.status(400).json({detail: `Job uuid is not valid`})
+    if (project && typeof project !== 'string') return res.status(400).json({detail: `Job uuid is not valid`})
+    if (project && !isValidUUID(project)) return res.status(400).json({detail: `Job uuid is not valid`})
 
-    const budgets = await getAllBudgets(companyUUID, job)
+    const budgets = await getAllBudgets(companyUUID, project)
 
     const formattedBudget = formatManyBudgetResponse(budgets)
 

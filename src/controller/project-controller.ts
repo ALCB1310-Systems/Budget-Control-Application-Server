@@ -79,7 +79,7 @@ export const updateProject = async (updateProjectInformation: projectCreate, pro
 
         await queryRunner.commitTransaction()
 
-        return {status: 201, detail: projectToUpdate}
+        return {status: 200, detail: projectToUpdate}
     } catch (error: any) {
         await queryRunner.rollbackTransaction()
         if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `Project with name: "${updateProjectInformation.name}" already exists`}

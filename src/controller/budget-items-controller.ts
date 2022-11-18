@@ -103,7 +103,7 @@ export const updateBudgetItem = async (updatedBudgetItemInformation: budgetItemC
         await queryRunner.manager.save(budgetItemToUpdate)
         await queryRunner.commitTransaction()
 
-        return {status: 201, detail: formatOneBudgetItemResponse(budgetItemToUpdate)}
+        return {status: 200, detail: formatOneBudgetItemResponse(budgetItemToUpdate)}
     } catch (error: any) {
         await queryRunner.rollbackTransaction()
          if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `Budget item with code: "${budgetItemToUpdate.code}" or name: "${budgetItemToUpdate.name}" already exists`}
