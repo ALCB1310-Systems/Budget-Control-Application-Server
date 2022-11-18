@@ -99,3 +99,16 @@ export const updateSupplier = async (updatedSupplierInformation: supplierCreate,
          return {status: 500, detail: `Unknown error, please check the logs`}
     }
 }
+
+export const getOneSupplierWithSupplierResponse = async (supplierUUID: string, companyUUID: string): Promise<Supplier | null> => {
+    const supplier = await supplierRepository
+        .createQueryBuilder("supplier")
+        .andWhere("supplier.companyUuid = :companyUuid")
+        .andWhere("supplier.uuid = :supplierUUID")
+        .setParameter("companyUuid", companyUUID)
+        .setParameter("supplierUUID", supplierUUID)
+        .orderBy("supplier.name")
+        .getOne()
+
+    return supplier
+}

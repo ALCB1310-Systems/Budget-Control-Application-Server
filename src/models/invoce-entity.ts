@@ -1,10 +1,11 @@
 import { Company } from './companies-entity';
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Relation } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Relation, Unique } from "typeorm";
 import { User } from './users-entity';
 import { Project } from './projects-entity';
 import { Supplier } from './suppliers-entity';
 
 @Entity()
+@Unique(["company", "supplier", "invoice_number"])
 export class Invoice extends BaseEntity {
     @PrimaryColumn({
         type: "uuid"
