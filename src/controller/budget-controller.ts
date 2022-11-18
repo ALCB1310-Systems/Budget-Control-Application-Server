@@ -1,9 +1,8 @@
 import { formatOneBudgetResponse } from './../helpers/format';
 import { getOneBudgetItem } from './budget-items-controller';
 import { errorType, successType } from './../types/responses-types';
-import { getOneProject } from './project-controller';
 import { Budget } from './../models/budget-entity';
-import { budgetCreate } from './../types/budget-type';
+import { budgetCreate, budgetUpdate } from './../types/budget-type';
 import { Repository, QueryRunner, SelectQueryBuilder } from 'typeorm';
 import { AppDataSource } from "../db/data-source";
 import { v4 } from 'uuid';
@@ -156,4 +155,24 @@ export const getOneBudget = async (budgetUUID: string, companyUUID: string): Pro
     if (!budget) return {status: 404, detail: `Budget with uuid ${budgetUUID} does not exist`}
 
     return {status: 200, detail: formatOneBudgetResponse(budget)}
+}
+
+export const updateBudget = async (updatedInfo: budgetUpdate, budgetToUpdate: Budget, companyUUID: string): Promise<errorType | successType> => {
+    return { status: 200, detail: "Success" }
+}
+
+export const getOneBudgetWithBudgetResponse = async (budgetUUID:string, companyUUID:string): Promise<Budget | null> => {
+    let budget: Budget | null = await budgetRepository
+        .createQueryBuilder("budget")
+        .leftJoinAndSelect("budget.project", "project")
+        .leftJoinAndSelect("budget.budgetItem", "budgetItem")
+        .leftJoinAndSelect("budgetItem.parent", "parent")
+        .leftJoinAndSelect("budget.company", "company")
+        .andWhere("budget.companyUuid = :company")
+        .andWhere("budget.uuid = :uuid")
+        .setParameter("company", companyUUID)
+        .setParameter("uuid", budgetUUID)
+        .getOne()
+
+    return budget
 }

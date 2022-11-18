@@ -1,7 +1,8 @@
+import { errorType, successType } from './../types/responses-types';
 import { validateUUID } from './../middleware/validateUuid';
 import { formatManyBudgetResponse } from './../helpers/format';
-import { createNewBudget, getAllBudgets, getOneBudget } from './../controller/budget-controller';
-import { budgetCreate } from './../types/budget-type';
+import { createNewBudget, getAllBudgets, getOneBudget, getOneBudgetWithBudgetResponse, updateBudget } from './../controller/budget-controller';
+import { budgetCreate, budgetUpdate } from './../types/budget-type';
 import { getOneProject } from './../controller/project-controller';
 import { getCompany } from './../controller/companies-controller';
 import { getOneUser } from './../controller/users-controller';
@@ -71,6 +72,32 @@ router.get("/:uuid", validateToken, validateUUID, async(req: Request, res: Respo
     const budget = await getOneBudget(budgetUUID, companyUUID)
 
     return res.status(budget.status).json({detail: budget.detail})
+})
+
+router.put("/:uuid", validateToken, validateUUID, async(req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    const budgetUUID = req.params.uuid
+    const { quantity, cost } = req.body
+
+    // DATA VALIDATION
+    if (quantity === undefined) return res.status(400).json({detail: `You need to specify a quantity`})
+    if (typeof quantity !== 'number') return res.status(400).json({detail: `The quantity must be a number`})
+
+    if (cost === undefined) return res.status(400).json({detail: `You need to specify a cost`})
+    if (typeof cost !== 'number') return res.status(400).json({detail: `The cost must be a number`})
+    // END OF DATA VALIDATION
+
+    const total = quantity * cost
+
+    const updateBudgetInfo: budgetUpdate = {quantity, cost, total}
+
+    const budget = await getOneBudgetWithBudgetResponse(budgetUUID, companyUUID)
+    if(!budget) return res.status(404).json({detail: `Budget with uuid: ${budgetUUID} does not exist`})
+
+    const updateBudgetResponse: errorType | successType = await updateBudget(updateBudgetInfo, budget, companyUUID)
+
+    return res.status(updateBudgetResponse.status).json({detail: updateBudgetResponse.detail})
+
 })
 
 export default router

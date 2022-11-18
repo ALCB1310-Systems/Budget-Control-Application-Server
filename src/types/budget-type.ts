@@ -15,6 +15,13 @@ export type budgetCreate = {
     budgetItem: BudgetItem
 }
 
+
+export type budgetUpdate = {
+    quantity: number,
+    cost: number,
+    total: number
+}
+
 export type budgetResponse = {
      uuid: string,
     initial_quantity: number | null,
