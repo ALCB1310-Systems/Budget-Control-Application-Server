@@ -52,7 +52,7 @@ export const getAllProjects = async (companyUUID: string): Promise<projectRespon
     return projects
 }
 
-export const getOneProject = async (projectUUID: string, companyUUID: string): Promise<projectResponse | null> => {
+export const getOneProject = async (projectUUID: string, companyUUID: string): Promise<Project | null> => {
     const project = projectRepository
         .createQueryBuilder("project")
         .select("project.uuid")
@@ -79,7 +79,7 @@ export const updateProject = async (updateProjectInformation: projectCreate, pro
 
         await queryRunner.commitTransaction()
 
-        return {status: 201, detail: projectToUpdate}
+        return {status: 200, detail: projectToUpdate}
     } catch (error: any) {
         await queryRunner.rollbackTransaction()
         if (error.code !== undefined && error.code === '23505') return { status: 409, detail: `Project with name: "${updateProjectInformation.name}" already exists`}

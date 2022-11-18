@@ -1,4 +1,6 @@
 import { Entity, Column, PrimaryColumn, Unique, BaseEntity, ManyToOne, CreateDateColumn, Relation, OneToMany } from 'typeorm'
+import { Budget } from './budget-entity';
+import { BudgetItem } from './budget-items-entity';
 import { Company } from './companies-entity';
 import { Project } from './projects-entity';
 import { Supplier } from './suppliers-entity';
@@ -35,11 +37,17 @@ export class User extends BaseEntity{
     @CreateDateColumn({
         type: 'timestamptz'
     })
-    created_at: Date
+    created_at!: Date
 
     @OneToMany(() => Supplier, (supplier) => supplier.user)
     suppliers: Supplier[]
 
     @OneToMany(() => Project, (project) => project.user)
     projects: Project[]
+
+    @OneToMany(() => BudgetItem, (budgetItem) => budgetItem.user)
+    budgetItems: BudgetItem[]
+
+    @OneToMany(() => Budget, (budget) => budget.user)
+    budgets: Budget[]
 }

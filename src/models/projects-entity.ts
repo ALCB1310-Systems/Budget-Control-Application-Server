@@ -1,4 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Relation, Unique } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryColumn, Relation, Unique } from "typeorm";
+import { Budget } from "./budget-entity";
 import { Company } from "./companies-entity";
 import { User } from "./users-entity";
 
@@ -31,4 +32,7 @@ export class Project extends BaseEntity {
         type: 'timestamptz'
     })
     created_at: Date
+
+    @OneToMany(() => Budget, (budget) => budget.project)
+    budgets: Budget[]
 }

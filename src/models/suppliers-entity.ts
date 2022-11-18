@@ -1,6 +1,6 @@
 import { User } from './users-entity';
 import { Company } from './companies-entity';
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Unique } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Unique, Relation } from "typeorm";
 
 @Entity()
 @Unique(["supplier_id", "company"])
@@ -47,7 +47,7 @@ export class Supplier extends BaseEntity{
     @CreateDateColumn({
         type: 'timestamptz'
     })
-    created_at: Date
+    created_at!: Date
 
     @ManyToOne(() => Company, (company) => company.suppliers)
     company: Relation<Company>
