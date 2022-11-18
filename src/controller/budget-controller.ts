@@ -3,7 +3,7 @@ import { getOneBudgetItem } from './budget-items-controller';
 import { errorType, successType } from './../types/responses-types';
 import { Budget } from './../models/budget-entity';
 import { budgetCreate, budgetUpdate } from './../types/budget-type';
-import { Repository, QueryRunner, SelectQueryBuilder } from 'typeorm';
+import { Repository, QueryRunner, SelectQueryBuilder, CannotAttachTreeChildrenEntityError } from 'typeorm';
 import { AppDataSource } from "../db/data-source";
 import { v4 } from 'uuid';
 import { debug } from 'console';
@@ -158,7 +158,56 @@ export const getOneBudget = async (budgetUUID: string, companyUUID: string): Pro
 }
 
 export const updateBudget = async (updatedInfo: budgetUpdate, budgetToUpdate: Budget, companyUUID: string): Promise<errorType | successType> => {
-    return { status: 200, detail: "Success" }
+    const diff = updatedInfo.total - budgetToUpdate.to_spend_total
+    debug("Diff", diff)
+
+    try {
+        await queryRunner.startTransaction()
+
+        budgetToUpdate.to_spend_quantity = updatedInfo.quantity
+        budgetToUpdate.to_spend_cost = updatedInfo.cost
+        budgetToUpdate.to_spend_total = diff + budgetToUpdate.to_spend_total
+        budgetToUpdate.updated_budget = budgetToUpdate.spent_total + budgetToUpdate.to_spend_total
+
+        queryRunner.manager.save(budgetToUpdate)
+
+        if (budgetToUpdate.budgetItem.parent){
+            const nextBudget = await getBudgetByItemAndProject(budgetToUpdate.budgetItem.parent.uuid, budgetToUpdate.project.uuid, companyUUID)
+            if (!nextBudget) throw new Error("No budget found for parent, check logs")
+
+            await updateParentBudget(diff, nextBudget, companyUUID, queryRunner)
+        }
+
+        await queryRunner.commitTransaction()
+        return { status: 200, detail: budgetToUpdate }
+    } catch (error: any) {
+        await queryRunner.rollbackTransaction()
+
+        if (error.code === '23505') return {status: 409, detail: `Budget for item ${budgetToUpdate.budgetItem.name} in project ${budgetToUpdate.project.name} already exists`}
+
+        console.error(error);
+        return {status: 500, detail: "An error occurred, check your logs"}
+    }
+}
+
+const updateParentBudget = async (diff: number, budget: Budget, companyUUID: string, queryRunner: QueryRunner): Promise<void> => {
+    try {
+        budget.to_spend_total += diff
+        budget.updated_budget = budget.spent_total + budget.to_spend_total
+
+        queryRunner.manager.save(budget)
+
+        if (budget.budgetItem.parent){
+            debug(budget.budgetItem.parent)
+            const nextBudget = await getBudgetByItemAndProject(budget.budgetItem.parent.uuid, budget.project.uuid, companyUUID)
+            if (!nextBudget) throw new Error("No budget found for parent, check logs")
+
+            await updateParentBudget(diff, nextBudget, companyUUID, queryRunner)
+        }
+    } catch (error: any) {
+        console.error(error)
+        throw new Error(error)
+    }
 }
 
 export const getOneBudgetWithBudgetResponse = async (budgetUUID:string, companyUUID:string): Promise<Budget | null> => {
@@ -172,6 +221,24 @@ export const getOneBudgetWithBudgetResponse = async (budgetUUID:string, companyU
         .andWhere("budget.uuid = :uuid")
         .setParameter("company", companyUUID)
         .setParameter("uuid", budgetUUID)
+        .getOne()
+
+    return budget
+}
+
+const getBudgetByItemAndProject = async (budgetItemUUID: string, projectUUID: string, companyUUID: string): Promise <Budget | null> => {
+    let budget: Budget | null = await budgetRepository
+        .createQueryBuilder("budget")
+        .leftJoinAndSelect("budget.project", "project")
+        .leftJoinAndSelect("budget.budgetItem", "budgetItem")
+        .leftJoinAndSelect("budgetItem.parent", "parent")
+        .leftJoinAndSelect("budget.company", "company")
+        .andWhere("budget.companyUuid = :company")
+        .andWhere("budgetItem.uuid = :budgetItemUuid")
+        .andWhere("project.uuid = :project")
+        .setParameter("company", companyUUID)
+        .setParameter("budgetItemUuid", budgetItemUUID)
+        .setParameter("project", projectUUID)
         .getOne()
 
     return budget
