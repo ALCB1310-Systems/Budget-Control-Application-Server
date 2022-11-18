@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryColumn, Unique, BaseEntity, OneToMany, CreateDateColumn } from 'typeorm'
 import { Budget } from './budget-entity';
 import { BudgetItem } from './budget-items-entity';
+import { Invoice } from './invoce-entity';
 import { Project } from './projects-entity';
 import { Supplier } from './suppliers-entity';
 import { User } from './users-entity'
@@ -42,4 +43,7 @@ export class Company extends BaseEntity {
 
     @OneToMany(() => Budget, (budget) => budget.company)
     budgets: Budget[]
+
+    @OneToMany(() => Invoice, (invoice) => invoice.company)
+    invoices: Invoice[]
 }

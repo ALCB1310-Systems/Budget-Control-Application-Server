@@ -7,6 +7,7 @@ import { Supplier } from '../models/suppliers-entity';
 import { Project } from '../models/projects-entity';
 import { BudgetItem } from '../models/budget-items-entity';
 import { Budget } from '../models/budget-entity';
+import { Invoice } from '../models/invoce-entity';
 
 export const AppDataSource: DataSource = new DataSource({
     type: `postgres`,
@@ -22,7 +23,8 @@ export const AppDataSource: DataSource = new DataSource({
         Supplier,
         Project,
         BudgetItem,
-        Budget
+        Budget,
+        Invoice
     ],
 })
 

@@ -1,6 +1,7 @@
+import { Invoice } from './invoce-entity';
 import { User } from './users-entity';
 import { Company } from './companies-entity';
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Unique, Relation } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Unique, Relation, OneToMany } from "typeorm";
 
 @Entity()
 @Unique(["supplier_id", "company"])
@@ -54,4 +55,7 @@ export class Supplier extends BaseEntity{
 
     @ManyToOne(() => User, (user) => user.suppliers)
     user: Relation<User>
+
+    @OneToMany(() => Invoice, (invoice) => invoice.supplier)
+    invoices: Relation<Invoice>
 }

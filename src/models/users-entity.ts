@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryColumn, Unique, BaseEntity, ManyToOne, CreateDat
 import { Budget } from './budget-entity';
 import { BudgetItem } from './budget-items-entity';
 import { Company } from './companies-entity';
+import { Invoice } from './invoce-entity';
 import { Project } from './projects-entity';
 import { Supplier } from './suppliers-entity';
 
@@ -37,7 +38,7 @@ export class User extends BaseEntity{
     @CreateDateColumn({
         type: 'timestamptz'
     })
-    created_at!: Date
+    created_at: Date
 
     @OneToMany(() => Supplier, (supplier) => supplier.user)
     suppliers: Supplier[]
@@ -50,4 +51,7 @@ export class User extends BaseEntity{
 
     @OneToMany(() => Budget, (budget) => budget.user)
     budgets: Budget[]
+
+    @OneToMany(() => Invoice, (invoice) => invoice.user)
+    invoices: Invoice[]
 }
