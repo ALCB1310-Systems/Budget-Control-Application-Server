@@ -1,3 +1,4 @@
+import { tokenData } from './../types/login-type';
 import { debug } from 'console';
 import { isValidDate } from './../helpers/dateValidation';
 import { Company } from './../models/companies-entity';
@@ -12,7 +13,7 @@ import { Project } from '../models/projects-entity';
 import { getCompany } from '../controller/companies-controller';
 import { User } from '../models/users-entity';
 import { getOneUser } from '../controller/users-controller';
-import { createInvoice } from '../controller/invoice-controller';
+import { createInvoice, getAllInvoices } from '../controller/invoice-controller';
 
 const router: Router = Router()
 
@@ -54,6 +55,15 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
     const createdInvoiceResponse = await createInvoice(invoiceToCreate, company, user)
 
     return res.status(createdInvoiceResponse.status).json({detail: createdInvoiceResponse.detail})
+})
+
+router.get("/", validateToken, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    const projectName  = req.query.project?.toString()
+
+    const invoices = await getAllInvoices(companyUUID, projectName)
+
+    return res.status(200).json({detail: invoices})
 })
 
 export default router
