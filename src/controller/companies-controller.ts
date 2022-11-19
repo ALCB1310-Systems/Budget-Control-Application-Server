@@ -64,7 +64,7 @@ export const updateCompany =async (updatedData: companyUpdate, existingCompany: 
     try {
         await companyRepository.save(existingCompany)
 
-        return {status: 201, detail: existingCompany}
+        return {status: 200, detail: existingCompany}
     } catch (error: any) {
         if (error.code !== undefined && error.code === '23505' && error.table === 'company') return { status: 409, detail: `Company with name: "${updatedData.name} "or ruc: "${updatedData.ruc}" already exists`}
         console.error(error)
