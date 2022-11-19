@@ -1,3 +1,5 @@
+import { invoiceResponse } from './../types/invoice-types';
+import { Invoice } from './../models/invoce-entity';
 import { Budget } from './../models/budget-entity';
 import { budgetItemResponse, budgetItemGetResponse } from './../types/budget-items-type';
 import { BudgetItem } from './../models/budget-items-entity';
@@ -112,4 +114,29 @@ export const formatOneBudgetResponse = (budget: Budget): budgetResponse => {
     }
 
     return budgetResponse
+}
+
+export const formatManyInvoicesResponse = (invoices: Invoice[]) => {
+    return invoices.map(invoice => formatOneInvoiceResponse(invoice))
+}
+
+export const formatOneInvoiceResponse = (invoice: Invoice): invoiceResponse => {
+    return {
+        uuid: invoice.uuid,
+        invoice_number: invoice.invoice_number,
+        date: invoice.date,
+        project: {
+            uuid: invoice.project.uuid,
+            name: invoice.project.name,
+            active: invoice.project.is_active
+        },
+        supplier: {
+            uuid: invoice.supplier.uuid,
+            supplier_id: invoice.supplier.supplier_id,
+            name: invoice.supplier.name,
+            contact_name: invoice.supplier.contact_name,
+            contact_email: invoice.supplier.contact_email,
+            contact_phone: invoice.supplier.contact_phone
+        }
+    }
 }

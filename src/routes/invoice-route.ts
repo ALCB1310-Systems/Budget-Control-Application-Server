@@ -1,9 +1,11 @@
+import { validateUUID } from './../middleware/validateUuid';
+import { formatManyInvoicesResponse, formatOneInvoiceResponse } from './../helpers/format';
 import { tokenData } from './../types/login-type';
 import { debug } from 'console';
 import { isValidDate } from './../helpers/dateValidation';
 import { Company } from './../models/companies-entity';
 import { getOneSupplierWithSupplierResponse } from './../controller/supplier-controller';
-import { invoiceCreate } from './../types/invoice-types';
+import { invoiceCreate, invoiceResponse } from './../types/invoice-types';
 import { getOneProject } from './../controller/project-controller';
 import { validateToken } from './../middleware/validateToken';
 import { Request, Response, Router } from "express";
@@ -13,7 +15,7 @@ import { Project } from '../models/projects-entity';
 import { getCompany } from '../controller/companies-controller';
 import { User } from '../models/users-entity';
 import { getOneUser } from '../controller/users-controller';
-import { createInvoice, getAllInvoices } from '../controller/invoice-controller';
+import { createInvoice, getAllInvoices, getOneInvoice } from '../controller/invoice-controller';
 
 const router: Router = Router()
 
@@ -42,14 +44,18 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
     else invoiceNumber = invoice_number
 
     if (!isValidDate(date)) return res.status(400).json({detail: `The date ${date} is not valid, please provide it in the format YYYY-MM-DD`})
+
     const invoiceDate = new Date(date)
+    const localOffset = new Date().getTimezoneOffset(); // in minutes
+    const localOffsetMillis = 60 * 1000 * localOffset;
+    const localMidnight = new Date(invoiceDate.getTime() + localOffsetMillis);
 
     // END OF DATA VALIDATION
     const invoiceToCreate: invoiceCreate = {
         project: selectedProject,
         supplier: selectedSupplier,
         invoice_number: invoiceNumber,
-        date: invoiceDate
+        date: localMidnight
     }
 
     const createdInvoiceResponse = await createInvoice(invoiceToCreate, company, user)
@@ -63,7 +69,18 @@ router.get("/", validateToken, async (req: Request, res: Response) => {
 
     const invoices = await getAllInvoices(companyUUID, projectName)
 
-    return res.status(200).json({detail: invoices})
+    return res.status(200).json({detail: formatManyInvoicesResponse(invoices)})
+})
+
+router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Response) => {
+    const { companyUUID } = res.locals.token
+    const { uuid } = req.params
+
+    const oneInvoiceResponse = await getOneInvoice(uuid, companyUUID)
+
+    if (!oneInvoiceResponse) return res.status(404).json({detail: `Invoice with uuid: ${uuid} not found`})
+
+    return res.status(200).json({detail: formatOneInvoiceResponse(oneInvoiceResponse)})
 })
 
 export default router

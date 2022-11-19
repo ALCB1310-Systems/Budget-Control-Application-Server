@@ -1,3 +1,4 @@
+import { formatOneInvoiceResponse } from './../helpers/format';
 import { QueryRunner, Repository, SelectQueryBuilder } from 'typeorm';
 import { errorType, successType } from './../types/responses-types';
 import { Company } from "../models/companies-entity";
@@ -14,7 +15,7 @@ const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 export const createInvoice = async (invoiceToCreate: invoiceCreate, company: Company, user: User): Promise<errorType | successType> => {
     try {
         await queryRunner.startTransaction()
-
+        
         const newInvoice = new Invoice()
         newInvoice.uuid = v4()
         newInvoice.company = company
@@ -29,7 +30,7 @@ export const createInvoice = async (invoiceToCreate: invoiceCreate, company: Com
 
         await queryRunner.commitTransaction()
 
-        return {status: 201, detail: newInvoice}
+        return {status: 201, detail: formatOneInvoiceResponse(newInvoice)}
     } catch (error: any) {
         await queryRunner.rollbackTransaction()
 
@@ -60,4 +61,17 @@ export const getAllInvoices = async (companyUUID: string, projectName: string | 
         .getMany()
 
     return invoices
+}
+
+export const getOneInvoice = async(invoiceUUID: string, companyUUID: string): Promise<Invoice | null> => {
+    const invoice: Invoice | null = await invoiceRepository.createQueryBuilder('invoice')
+        .leftJoinAndSelect('invoice.project', 'project')
+        .leftJoinAndSelect('invoice.supplier', 'supplier')
+        .andWhere("invoice.companyUuid = :companyUuid")
+        .andWhere("invoice.uuid = :uuid")
+        .setParameter("companyUuid", companyUUID)
+        .setParameter("uuid", invoiceUUID)
+        .getOne()
+
+    return invoice
 }
