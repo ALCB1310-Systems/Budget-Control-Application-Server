@@ -1,3 +1,4 @@
+import { invoiceUpdate } from './../types/invoice-types';
 import { formatOneInvoiceResponse } from './../helpers/format';
 import { QueryRunner, Repository, SelectQueryBuilder } from 'typeorm';
 import { errorType, successType } from './../types/responses-types';
@@ -74,4 +75,23 @@ export const getOneInvoice = async(invoiceUUID: string, companyUUID: string): Pr
         .getOne()
 
     return invoice
+}
+
+export const updateInvoice = async(updatedInfo: invoiceUpdate, invoiceToUpdate: Invoice): Promise<errorType | successType> => {
+    try {
+        await queryRunner.startTransaction()
+
+        invoiceToUpdate.invoice_number = updatedInfo.invoice_number || invoiceToUpdate.invoice_number
+        invoiceToUpdate.date = updatedInfo.date || invoiceToUpdate.date
+
+        await queryRunner.manager.save(invoiceToUpdate)
+
+        await queryRunner.commitTransaction()
+
+        return {status: 200, detail: formatOneInvoiceResponse(invoiceToUpdate)}
+    } catch (error: any) {
+        await queryRunner.rollbackTransaction()
+        console.error(error)
+        return {status: 500, detail: "Unknwon error please check your logs"}
+    }
 }

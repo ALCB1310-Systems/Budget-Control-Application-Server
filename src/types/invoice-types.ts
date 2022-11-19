@@ -8,6 +8,11 @@ export type invoiceCreate = {
     date: Date
 }
 
+export type invoiceUpdate = {
+    invoice_number: string | null | undefined,
+    date: Date | null | undefined
+}
+
 export type invoiceResponse = {
     uuid: string,
     invoice_number: string,
