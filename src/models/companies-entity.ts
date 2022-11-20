@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryColumn, Unique, BaseEntity, OneToMany, CreateDat
 import { Budget } from './budget-entity';
 import { BudgetItem } from './budget-items-entity';
 import { Invoice } from './invoce-entity';
+import { InvoiceDetail } from './invoice-details-entity';
 import { Project } from './projects-entity';
 import { Supplier } from './suppliers-entity';
 import { User } from './users-entity'
@@ -46,4 +47,7 @@ export class Company extends BaseEntity {
 
     @OneToMany(() => Invoice, (invoice) => invoice.company)
     invoices: Invoice[]
+
+    @OneToMany(() => InvoiceDetail, (invoiceDetail) => invoiceDetail.company)
+    invoiceDetails: InvoiceDetail[]
 }
