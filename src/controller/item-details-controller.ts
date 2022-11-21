@@ -43,7 +43,7 @@ export const createInvoiceDetail = async (invoiceDetailData: invoiceDetailCreate
         budget.to_spend_total = budget.to_spend_quantity * budget.to_spend_cost
         budget.updated_budget = budget.spent_total + budget.to_spend_total
 
-        await queryRunner.manager.save(invoice)
+        await queryRunner.manager.save(budget)
 
         const diff = budget.updated_budget - previousUpdatedBudget
         if (budget.budgetItem.parent){
