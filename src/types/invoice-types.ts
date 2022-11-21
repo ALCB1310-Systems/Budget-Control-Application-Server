@@ -17,6 +17,7 @@ export type invoiceResponse = {
     uuid: string,
     invoice_number: string,
     date: Date,
+    total: number,
     project: {
         uuid: string,
         name: string,

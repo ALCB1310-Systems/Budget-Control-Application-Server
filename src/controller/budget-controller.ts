@@ -226,7 +226,7 @@ export const getOneBudgetWithBudgetResponse = async (budgetUUID:string, companyU
     return budget
 }
 
-const getBudgetByItemAndProject = async (budgetItemUUID: string, projectUUID: string, companyUUID: string): Promise <Budget | null> => {
+export const getBudgetByItemAndProject = async (budgetItemUUID: string, projectUUID: string, companyUUID: string): Promise <Budget | null> => {
     let budget: Budget | null = await budgetRepository
         .createQueryBuilder("budget")
         .leftJoinAndSelect("budget.project", "project")
@@ -242,4 +242,27 @@ const getBudgetByItemAndProject = async (budgetItemUUID: string, projectUUID: st
         .getOne()
 
     return budget
+}
+
+export const saveBudgetWithSpent = async(total: number, diff: number, budget: Budget, queryRunner: QueryRunner): Promise<boolean> => {
+
+    try {
+        budget.spent_total += total
+        budget.to_spend_total += total + diff
+        budget.updated_budget = budget.spent_total + budget.to_spend_total
+
+        await queryRunner.manager.save(budget)
+
+        if (budget.budgetItem.parent){
+            const nextBudget: Budget | null = await getBudgetByItemAndProject(budget.budgetItem.parent.uuid, budget.project.uuid, budget.company.uuid)
+            if(nextBudget)
+                await saveBudgetWithSpent(total, diff, nextBudget, queryRunner)
+        }
+
+        return true
+    } catch (error: any) {
+        console.error(error)
+        throw new Error(error)
+    }
+
 }

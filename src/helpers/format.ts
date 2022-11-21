@@ -125,6 +125,7 @@ export const formatOneInvoiceResponse = (invoice: Invoice): invoiceResponse => {
         uuid: invoice.uuid,
         invoice_number: invoice.invoice_number,
         date: invoice.date,
+        total: invoice.total,
         project: {
             uuid: invoice.project.uuid,
             name: invoice.project.name,
