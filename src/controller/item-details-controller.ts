@@ -66,3 +66,18 @@ export const createInvoiceDetail = async (invoiceDetailData: invoiceDetailCreate
         return { status: 500, detail: 'Something went wrong, please check your logs'}
     }
 }
+
+export const getAllInvoiceDetaile = async (invoiceUUID: string, companyUUID: string): Promise<InvoiceDetail[]> => {
+    const invoiceDetails = invoiceDetailRepository.createQueryBuilder("detail")
+        .leftJoinAndSelect("detail.budgetItem", "budgetItem")
+        .leftJoinAndSelect("detail.invoice", "invoice")
+        .leftJoinAndSelect("invoice.supplier", "supplier")
+        .leftJoinAndSelect("invoice.project", "project")
+        .andWhere("detail.companyUuid = :companyUUID")
+        .andWhere("detail.invoiceUuid = :invoiceUUID")
+        .setParameter("companyUUID", companyUUID)
+        .setParameter("invoiceUUID", invoiceUUID)
+        .getMany()
+
+    return invoiceDetails
+}

@@ -5,16 +5,12 @@ import { isEmailValid } from './../middleware/validateEmail';
 import { createCompany, getCompany, updateCompany } from './../controller/companies-controller';
 import express, { Request, Response, Router } from 'express'
 import { companyCreate, companyResponse } from '../types/company-type'
-import { isDataValid } from '../validation/validateData';
+import { isDataValid } from '../validation';
 
 const router: Router = express.Router()
 
 router.post('/', async (req: Request, res: Response) => {
-    if (req.body && Object.keys(req.body).length === 0 && Object.getPrototypeOf(req.body) === Object.prototype ) return res.status(400).json({detail: `Need to send user information`})
-
-    const { ruc, name, employees, email, password, fullname }: companyCreate = req.body
-
-    const dataValid = isDataValid(req.body, createCompanyValidator)
+ const dataValid = isDataValid(req.body, createCompanyValidator)
 
     console.log(dataValid);
     if (!dataValid.status) 

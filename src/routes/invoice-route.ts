@@ -2,11 +2,11 @@ import { getBudgetByItemAndProject } from './../controller/budget-controller';
 import { Project } from './../models/projects-entity';
 import { getOneBudgetItemWithBudgetItemResponse } from './../controller/budget-items-controller';
 import { BudgetItem } from './../models/budget-items-entity';
-import { createInvoiceDetail } from './../controller/item-details-controller';
+import { createInvoiceDetail, getAllInvoiceDetaile } from './../controller/item-details-controller';
 import { errorType, successType } from './../types/responses-types';
 import { Invoice } from './../models/invoce-entity';
 import { validateUUID, isValidUUID } from './../middleware/validateUuid';
-import { formatManyInvoicesResponse, formatOneInvoiceResponse } from './../helpers/format';
+import { formatManyInvoicesResponse, formatOneInvoiceResponse, formatManyInvoiceDetailResponse } from './../helpers/format';
 import { debug } from 'console';
 import { isValidDate } from './../helpers/dateValidation';
 import { Company } from './../models/companies-entity';
@@ -21,6 +21,7 @@ import { User } from '../models/users-entity';
 import { getOneUser } from '../controller/users-controller';
 import { createInvoice, getAllInvoices, getOneInvoice, updateInvoice } from '../controller/invoice-controller';
 import { Budget } from '../models/budget-entity';
+import { InvoiceDetail } from '../models/invoice-details-entity';
 
 const router: Router = Router()
 
@@ -161,6 +162,15 @@ router.post("/:uuid/details", validateToken, validateUUID, async (req: Request, 
 
     return res.status(invoiceDetailResponse.status).json({detail: invoiceDetailResponse.detail})
 
+})
+
+router.get("/:uuid/details", validateToken, validateUUID, async (req: Request, res: Response) => {
+    const invoiceUUID = req.params.uuid
+    const { companyUUID } = res.locals.token 
+
+    const invoiceDetailsData: InvoiceDetail[] = await getAllInvoiceDetaile(invoiceUUID, companyUUID)
+
+    return res.status(200).json({detail: formatManyInvoiceDetailResponse(invoiceDetailsData)})
 })
 
 export default router
