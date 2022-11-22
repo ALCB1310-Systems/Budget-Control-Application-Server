@@ -1,4 +1,4 @@
-import { createCompanyValidator } from './../validation/company-validate';
+import { createCompanyValidator, updateCompanyValidator } from './../validation/company-validate';
 import { Company } from './../models/companies-entity';
 import { validateToken } from './../middleware/validateToken';
 import { isEmailValid } from './../middleware/validateEmail';
@@ -35,7 +35,9 @@ router.get('/', validateToken, async (req: Request, res: Response) => {
 router.put("/", validateToken,async (req:Request, res: Response) => {
     const { companyUUID } = res.locals.token
     let { ruc, name, employees }: companyCreate = req.body
-    
+
+    const dataValid = isDataValid(req.body, updateCompanyValidator)
+        
     const company: Company | null = await getCompany(companyUUID)
     if (!company) return res.status(404).json({detail: `No company found`})
 
