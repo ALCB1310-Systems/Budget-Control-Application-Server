@@ -1,6 +1,6 @@
-import { Budget } from './../models/budget-entity';
-import { errorType, successType } from './../types/responses-types';
-import { Invoice } from './../models/invoce-entity';
+import { Budget } from '../models/budget-entity';
+import { errorType, successType } from '../types/responses-types';
+import { Invoice } from '../models/invoce-entity';
 import { Repository, QueryRunner } from 'typeorm';
 import { AppDataSource } from "../db/data-source";
 import { InvoiceDetail } from "../models/invoice-details-entity";

@@ -2,7 +2,7 @@ import { getBudgetByItemAndProject } from './../controller/budget-controller';
 import { Project } from './../models/projects-entity';
 import { getOneBudgetItemWithBudgetItemResponse } from './../controller/budget-items-controller';
 import { BudgetItem } from './../models/budget-items-entity';
-import { createInvoiceDetail, getAllInvoiceDetaile } from './../controller/item-details-controller';
+import { createInvoiceDetail, getAllInvoiceDetaile } from '../controller/invoice-details-controller';
 import { errorType, successType } from './../types/responses-types';
 import { Invoice } from './../models/invoce-entity';
 import { validateUUID, isValidUUID } from './../middleware/validateUuid';
