@@ -3,6 +3,7 @@ import { Budget } from './budget-entity';
 import { BudgetItem } from './budget-items-entity';
 import { Company } from './companies-entity';
 import { Invoice } from './invoce-entity';
+import { InvoiceDetail } from './invoice-details-entity';
 import { Project } from './projects-entity';
 import { Supplier } from './suppliers-entity';
 
@@ -54,4 +55,7 @@ export class User extends BaseEntity{
 
     @OneToMany(() => Invoice, (invoice) => invoice.user)
     invoices: Invoice[]
+
+    @OneToMany(() => InvoiceDetail, (invoiceDetail) => invoiceDetail.user)
+    invoiceDetails: InvoiceDetail[]
 }

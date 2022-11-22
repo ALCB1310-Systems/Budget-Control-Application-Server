@@ -11,6 +11,7 @@ import { Company } from "../models/companies-entity";
 import { User } from "../models/users-entity";
 import { Project } from '../models/projects-entity';
 import { budgetResponse } from '../types/budget-type';
+import { InvoiceDetail } from '../models/invoice-details-entity';
 
 export const formatManyUserResponse = (users: User[], company: Company): userResponse[] => {
     const formattedUser = users.map(user => {
@@ -125,6 +126,7 @@ export const formatOneInvoiceResponse = (invoice: Invoice): invoiceResponse => {
         uuid: invoice.uuid,
         invoice_number: invoice.invoice_number,
         date: invoice.date,
+        total: invoice.total,
         project: {
             uuid: invoice.project.uuid,
             name: invoice.project.name,
@@ -139,4 +141,39 @@ export const formatOneInvoiceResponse = (invoice: Invoice): invoiceResponse => {
             contact_phone: invoice.supplier.contact_phone
         }
     }
+}
+
+export const formatOneInvoiceDetailResponse = (invoiceDetail: InvoiceDetail) => {
+    return {
+        uuid: invoiceDetail.uuid,
+        quantity: invoiceDetail.quantity,
+        cost: invoiceDetail.cost,
+        total: invoiceDetail.total,
+        budgetItem: {
+            uuid: invoiceDetail.budgetItem.uuid,
+            code: invoiceDetail.budgetItem.code,
+            name: invoiceDetail.budgetItem.name
+        },
+        invoice: {
+            uuid: invoiceDetail.invoice.uuid,
+            invoice_number: invoiceDetail.invoice.invoice_number,
+            total: invoiceDetail.invoice.total,
+            date: invoiceDetail.invoice.date,
+            supplier: {
+                uuid: invoiceDetail.invoice.supplier.uuid,
+                name: invoiceDetail.invoice.supplier.name,
+                contact_name: invoiceDetail.invoice.supplier.contact_name,
+                contact_email: invoiceDetail.invoice.supplier.contact_email,
+                contact_phone: invoiceDetail.invoice.supplier.contact_phone
+            },
+            project: {
+                uuid: invoiceDetail.invoice.project.uuid,
+                name: invoiceDetail.invoice.project.name
+            }
+        }
+    }
+}
+
+export const formatManyInvoiceDetailResponse = (invoiceDetails: InvoiceDetail[]) => {
+    return invoiceDetails.map(invoiceDetail => formatOneInvoiceDetailResponse(invoiceDetail))
 }

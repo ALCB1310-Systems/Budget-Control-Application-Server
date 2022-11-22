@@ -71,6 +71,21 @@ export const getOneBudgetItem = async (budgetItemUuid: string, companyUuid: stri
     return { status: 200, detail: budgetItem }
 }
 
+export const getOneBudgetItemWithBudgetItemResponse = async (budgetItemUuid: string, companyUuid: string): Promise<BudgetItem | null> => {
+    const company = await getCompany(companyUuid)
+    if (!company) throw new Error("couldn't get the company")
+    const budgetItem = await budgetItemRepository
+        .createQueryBuilder("budgetItem")
+        .leftJoinAndSelect("budgetItem.parent", "parent")
+        .andWhere("budgetItem.companyUuid = :companyUuid")
+        .andWhere("budgetItem.uuid = :budgetItemUuid")
+        .setParameter("companyUuid", companyUuid)
+        .setParameter("budgetItemUuid", budgetItemUuid)
+        .getOne()
+
+    return budgetItem
+}
+
 const getParentBudgetItem = async (parentUUID: string, company: Company): Promise<BudgetItem | null> => {
     const budgetItem = await budgetItemRepository
         .createQueryBuilder("budgetItem")
