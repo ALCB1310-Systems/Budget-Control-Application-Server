@@ -41,6 +41,14 @@ export const validateData = (dataValidator: any) => {
                     }
                 })
             
+            if (dataValidator[key].type === 'boolean' && req.body[key] !== undefined && typeof req.body[key] !== 'boolean')
+                return res.status(400).json({
+                    detail: {
+                        errorKey: key,
+                        errorDescription: `${key} should be a boolean`
+                    }
+                })
+            
             if ('length' in dataValidator[key] && req.body[key] !== undefined  && req.body[key].length < dataValidator[key].length)
                     return res.status(400).json({
                         detail: {
