@@ -1,5 +1,7 @@
+import { isValidUUID } from './validateUuid';
 import { NextFunction, Request, Response } from "express";
 import { isEmailValid } from "./validateEmail";
+import { debug } from 'console';
 
 export const validateData = (dataValidator: any) => {
 
@@ -9,7 +11,7 @@ export const validateData = (dataValidator: any) => {
         // iterate through each object property in the data validator to validate that we are receiving valid information
         // will always return what key triggered the validation error and what happened to trigger the error
         for (const key in dataValidator){
-            if (dataValidator[key].required && !req.body[key]) // This will check if a required value is present
+            if (dataValidator[key].required && req.body[key] === undefined) // This will check if a required value is present
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
@@ -22,6 +24,14 @@ export const validateData = (dataValidator: any) => {
                     detail: {
                         errorKey: key,
                         errorDescription: `${key} should be a valid email`
+                    }
+                })
+
+            if (dataValidator[key].type === 'uuid' && req.body[key] !== undefined && !isValidUUID(req.body[key])) // If it is an UUID we will use our UUID validator
+                return res.status(400).json({
+                    detail: {
+                        errorKey: key,
+                        errorDescription: `${key} should be a valid UUID`
                     }
                 })
 
