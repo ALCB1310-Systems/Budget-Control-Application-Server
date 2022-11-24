@@ -17,7 +17,7 @@ export const validateData = (dataValidator: any) => {
                     }
                 })
             
-            if (dataValidator[key].type === 'email' && !isEmailValid(req.body[key])) // If it is an email we will use our email validator
+            if (dataValidator[key].type === 'email' && req.body[key] !== undefined && !isEmailValid(req.body[key])) // If it is an email we will use our email validator
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
@@ -25,7 +25,7 @@ export const validateData = (dataValidator: any) => {
                     }
                 })
 
-            if (dataValidator[key].type === 'number' && typeof req.body[key] !== 'number') 
+            if (dataValidator[key].type === 'number' && req.body[key] !== undefined  && typeof req.body[key] !== 'number') 
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
@@ -33,7 +33,7 @@ export const validateData = (dataValidator: any) => {
                     }
                 })
 
-            if (dataValidator[key].type === 'number' && req.body[key] <  0)
+            if (dataValidator[key].type === 'number' && req.body[key] !== undefined  && req.body[key] <  0)
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
@@ -41,7 +41,7 @@ export const validateData = (dataValidator: any) => {
                     }
                 })
             
-            if ('length' in dataValidator[key] && req.body[key].length < dataValidator[key].length)
+            if ('length' in dataValidator[key] && req.body[key] !== undefined  && req.body[key].length < dataValidator[key].length)
                     return res.status(400).json({
                         detail: {
                             errorKey: key,

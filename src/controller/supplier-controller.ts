@@ -11,18 +11,18 @@ const supplierRepository = AppDataSource.getRepository(Supplier)
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 
 export const createSupplier = async (newSupplier: supplierCreate, company: Company, user: User): Promise<errorType | successType> => {
-    const supplierToCreate = new Supplier()
-    supplierToCreate.uuid
-    supplierToCreate.supplier_id = newSupplier.supplier_id
-    supplierToCreate.name = newSupplier.name
-    supplierToCreate.contact_email = newSupplier.contact_email
-    supplierToCreate.contact_name = newSupplier.contact_name
-    supplierToCreate.contact_phone = newSupplier.contact_phone
-    supplierToCreate.company = company
-    supplierToCreate.user = user
-
+    
     try {
         await queryRunner.startTransaction()
+        const supplierToCreate = new Supplier()
+        supplierToCreate.uuid = v4()
+        supplierToCreate.supplier_id = newSupplier.supplier_id
+        supplierToCreate.name = newSupplier.name
+        supplierToCreate.contact_email = newSupplier.contact_email
+        supplierToCreate.contact_name = newSupplier.contact_name
+        supplierToCreate.contact_phone = newSupplier.contact_phone
+        supplierToCreate.company = company
+        supplierToCreate.user = user
 
         await queryRunner.manager.save(supplierToCreate)
 

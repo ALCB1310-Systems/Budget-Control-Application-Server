@@ -6,6 +6,7 @@ import { companyCreate, companyUpdate } from './../types/company-type'
 import { AppDataSource } from '../db/data-source'
 import { QueryRunner, Repository } from 'typeorm';
 import { userCreate } from '../types/users-type';
+import { v4 } from 'uuid';
 
 const companyRepository: Repository<Company> = AppDataSource.getRepository(Company)
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
@@ -15,7 +16,7 @@ export const createCompany = async (newCompany: companyCreate ): Promise<errorTy
     try {
         await queryRunner.startTransaction()
         const company = new Company()
-        company.uuid
+        company.uuid = v4()
         company.name = newCompany.name
         company.ruc = newCompany.ruc
         company.employees = newCompany.employees
