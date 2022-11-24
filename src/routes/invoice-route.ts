@@ -24,6 +24,7 @@ import { createInvoice, getAllInvoices, getOneInvoice, updateInvoice } from '../
 import { Budget } from '../models/budget-entity';
 import { InvoiceDetail } from '../models/invoice-details-entity';
 import { createInvoiceValidator, updateInvoiceValidator } from '../validators/invoice-validator';
+import { invoiceDetailCreateValidator } from '../validators/invoice-details-validator';
 
 const router: Router = Router()
 
@@ -107,7 +108,7 @@ router.put("/:uuid", validateToken, validateUUID, validateData(updateInvoiceVali
     return res.status(updatedInvoiceResponse.status).json({detail: updatedInvoiceResponse.detail})
 })
 
-router.post("/:uuid/details", validateToken, validateUUID, async (req: Request, res: Response) => {
+router.post("/:uuid/details", validateToken, validateUUID, validateData(invoiceDetailCreateValidator), async (req: Request, res: Response) => {
     const invoiceUUID = req.params.uuid
     const { userUUID, companyUUID } = res.locals.token 
     const { budgetItemUUID, quantity, cost } = req.body
@@ -122,7 +123,6 @@ router.post("/:uuid/details", validateToken, validateUUID, async (req: Request, 
     const company: Company | null = await getCompany(companyUUID)
     if (!company) return res.status(404).json({detail: `Unable to find the logged in company`})
 
-    if (!budgetItemUUID || !isValidUUID(budgetItemUUID)) return res.status(400).json({detail: `Invaild budget item uuid`})
     const budgetItem: BudgetItem | null = await getOneBudgetItemWithBudgetItemResponse(budgetItemUUID, companyUUID)
     if (!budgetItem) return res.status(404).json({detail: `Budget item with uuid ${budgetItemUUID} does not exist`})
 
@@ -130,10 +130,6 @@ router.post("/:uuid/details", validateToken, validateUUID, async (req: Request, 
 
     const budget: Budget | null = await getBudgetByItemAndProject(budgetItemUUID, project.uuid, companyUUID)
     if (!budget) return res.status(404).json({detail: `No budget created for budget item ${budgetItem.name} in project ${project.name}`})
-
-    if (!quantity || typeof quantity !== "number") return res.status(400).json({detail: `Invalid quantity, must be a numeric value`})
-    if (!cost || typeof cost !== "number") return res.status(400).json({detail: `Invalid cost, must be a numeric value`})
-
     // END OF DATA VALIDATION
 
     const total: number = quantity * cost
