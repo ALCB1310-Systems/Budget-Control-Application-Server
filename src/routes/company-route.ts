@@ -1,5 +1,5 @@
 import { validateData } from './../middleware/dataValidation';
-import { createCompanyValidator, updateCompanyValidator } from '../validators/company-validate';
+import { createCompanyValidator, updateCompanyValidator } from '../validators/company-validator';
 import { Company } from './../models/companies-entity';
 import { validateToken } from './../middleware/validateToken';
 import { createCompany, getCompany, updateCompany } from './../controller/companies-controller';

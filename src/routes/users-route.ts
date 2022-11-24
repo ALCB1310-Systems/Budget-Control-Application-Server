@@ -6,7 +6,7 @@ import { validateToken } from './../middleware/validateToken';
 import express, { Request, Response, Router } from 'express'
 import { Company } from '../models/companies-entity';
 import { getCompany } from '../controller/companies-controller';
-import { createUserValidator } from '../validators/user-validate';
+import { createUserValidator } from '../validators/user-validator';
 
 const router: Router = express.Router()
 
