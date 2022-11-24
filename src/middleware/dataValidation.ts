@@ -2,6 +2,7 @@ import { isValidUUID } from './validateUuid';
 import { NextFunction, Request, Response } from "express";
 import { isEmailValid } from "./validateEmail";
 import { debug } from 'console';
+import { isValidDate } from '../helpers/dateValidation';
 
 export const validateData = (dataValidator: any) => {
 
@@ -60,13 +61,20 @@ export const validateData = (dataValidator: any) => {
                 })
             
             if ('length' in dataValidator[key] && req.body[key] !== undefined  && req.body[key].length < dataValidator[key].length)
-                    return res.status(400).json({
-                        detail: {
-                            errorKey: key,
-                            errorDescription: `${key} should have at least ${dataValidator[key].length} characters`
-                        }
-                    })
+                return res.status(400).json({
+                    detail: {
+                        errorKey: key,
+                        errorDescription: `${key} should have at least ${dataValidator[key].length} characters`
+                    }
+                })
             
+            if (dataValidator[key].type === 'date' && req.body[key] !== undefined && !isValidDate(req.body[key]))
+                return res.status(400).json({
+                    detail: {
+                        errorKey: key,
+                        errorDescription: `${key} should be a valid date`
+                    }
+                })
         }
 
         // If there is no error validation then go to the next function

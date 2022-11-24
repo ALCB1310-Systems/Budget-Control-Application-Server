@@ -1,3 +1,4 @@
+import { validateData } from './../middleware/dataValidation';
 import { getBudgetByItemAndProject } from './../controller/budget-controller';
 import { Project } from './../models/projects-entity';
 import { getOneBudgetItemWithBudgetItemResponse } from './../controller/budget-items-controller';
@@ -22,16 +23,15 @@ import { getOneUser } from '../controller/users-controller';
 import { createInvoice, getAllInvoices, getOneInvoice, updateInvoice } from '../controller/invoice-controller';
 import { Budget } from '../models/budget-entity';
 import { InvoiceDetail } from '../models/invoice-details-entity';
+import { createInvoiceValidator, updateInvoiceValidator } from '../validators/invoice-validator';
 
 const router: Router = Router()
 
-router.post("/", validateToken, async (req: Request, res: Response) => {
+router.post("/", validateToken, validateData(createInvoiceValidator), async (req: Request, res: Response) => {
     const { companyUUID, userUUID } = res.locals.token
     const { supplier, project, invoice_number, date } = req.body
 
     // DATA VALIDATION}
-    if (!supplier || !isValidUUID(supplier)) return res.status(400).json({detail: `Need to provide a valid UUID for the supplier`})
-    if (!project || !isValidUUID(project)) return res.status(400).json({detail: `Need to provide a valid UUID for the project`})
 
     const selectedSupplier: Supplier | null = await getOneSupplierWithSupplierResponse(supplier, companyUUID)
     if (!selectedSupplier) return res.status(404).json({detail: `Supplier with uuid: ${supplier} does not exist`})
@@ -45,12 +45,6 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
     const user: User | null = await getOneUser(userUUID, companyUUID)
     if (!user) return res.status(404).json({detail: `Could not get the user your are logged in as`})
 
-    let invoiceNumber: string
-    if (typeof invoice_number !== 'string') invoiceNumber = invoice_number.toString()
-    else invoiceNumber = invoice_number
-
-    if (!isValidDate(date)) return res.status(400).json({detail: `The date ${date} is not valid, please provide it in the format YYYY-MM-DD`})
-
     const invoiceDate = new Date(date)
     const localOffset = new Date().getTimezoneOffset(); // in minutes
     const localOffsetMillis = 60 * 1000 * localOffset;
@@ -60,7 +54,7 @@ router.post("/", validateToken, async (req: Request, res: Response) => {
     const invoiceToCreate: invoiceCreate = {
         project: selectedProject,
         supplier: selectedSupplier,
-        invoice_number: invoiceNumber,
+        invoice_number,
         date: localMidnight
     }
 
@@ -88,20 +82,13 @@ router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Resp
     return res.status(200).json({detail: formatOneInvoiceResponse(oneInvoiceResponse)})
 })
 
-router.put("/:uuid", validateToken, validateUUID, async (req: Request, res: Response) => {
+router.put("/:uuid", validateToken, validateUUID, validateData(updateInvoiceValidator), async (req: Request, res: Response) => {
     const { companyUUID } = res.locals.token
     const invoiceUUID = req.params.uuid
 
     const { invoice_number, date } = req.body
 
     // DATA VALIDATION
-
-    let invoiceNumber: string
-    if (typeof invoice_number !== 'string') invoiceNumber = invoice_number.toString()
-    else invoiceNumber = invoice_number
-
-    if (!isValidDate(date)) return res.status(400).json({detail: `The date ${date} is not valid, please provide it in the format YYYY-MM-DD`})
-
     const invoiceDate = new Date(date)
     const localOffset = new Date().getTimezoneOffset(); // in minutes
     const localOffsetMillis = 60 * 1000 * localOffset;
@@ -109,7 +96,7 @@ router.put("/:uuid", validateToken, validateUUID, async (req: Request, res: Resp
     // END OF DATA VALIDATION
 
     const updateData: invoiceUpdate = {
-        invoice_number: invoiceNumber,
+        invoice_number,
         date: localMidnight
     }
 
