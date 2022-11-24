@@ -26,3 +26,19 @@ export const createCompanyValidator = {
         type: 'string'
     }
 }
+
+export const updateCompanyValidator = {
+    ruc: {
+        required: false,
+        type: 'string',
+        length: 8
+    },
+    name: {
+        required: false,
+        type: 'string',
+    },
+    employees: {
+        required: false,
+        type: 'number'
+    }
+}

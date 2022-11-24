@@ -12,17 +12,17 @@ const projectRepository: Repository<Project> = AppDataSource.getRepository(Proje
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 
 export const createProject = async (newProject: projectCreate, company: Company, user: User):Promise<errorType | successType> => {
-    const project: Project = new Project()
-
-    project.uuid = v4()
-    project.name = newProject.name
-    project.is_active = newProject.is_active
-    project.company = company
-    project.user = user
-
+    
     try {
         await queryRunner.startTransaction()
-
+        const project: Project = new Project()
+    
+        project.uuid = v4()
+        project.name = newProject.name
+        project.is_active = newProject.is_active
+        project.company = company
+        project.user = user
+        
         await queryRunner.manager.save(project)
 
         await queryRunner.commitTransaction()
@@ -69,12 +69,12 @@ export const getOneProject = async (projectUUID: string, companyUUID: string): P
 }
 
 export const updateProject = async (updateProjectInformation: projectCreate, projectToUpdate: projectResponse): Promise<errorType|successType> => {
-    projectToUpdate.name = updateProjectInformation.name ? updateProjectInformation.name : projectToUpdate.name
-    projectToUpdate.is_active = projectToUpdate.is_active !== undefined ? updateProjectInformation.is_active : projectToUpdate.is_active
-
+    
     try {
         await queryRunner.startTransaction()
-
+        projectToUpdate.name = updateProjectInformation.name ? updateProjectInformation.name : projectToUpdate.name
+        projectToUpdate.is_active = projectToUpdate.is_active !== undefined ? updateProjectInformation.is_active : projectToUpdate.is_active
+        
         await queryRunner.manager.save(projectToUpdate)
 
         await queryRunner.commitTransaction()
