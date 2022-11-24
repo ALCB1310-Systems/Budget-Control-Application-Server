@@ -1,4 +1,4 @@
-import { supplierResponse } from './../types/supplier-type';
+import { Supplier } from './../models/suppliers-entity';
 import { validateUUID } from './../middleware/validateUuid';
 import { formatOneSupplierResponse } from './../helpers/format';
 import { successType, errorType } from './../types/responses-types';
@@ -52,7 +52,7 @@ router.get("/:uuid", validateToken, validateUUID, async (req: Request, res: Resp
     const { companyUUID } = res.locals.token
     const { uuid } = req.params
     
-    const supplier: supplierResponse | null = await getOneSupplier(companyUUID, uuid)
+    const supplier: Supplier | null = await getOneSupplier(companyUUID, uuid)
     
     if (!supplier) return res.status(404).json({detail: `Supplier with uuid: ${uuid} does not exist`})
     
@@ -63,7 +63,7 @@ router.put("/:uuid", validateToken, validateUUID, async (req: Request, res: Resp
     const { companyUUID } = res.locals.token
     const { uuid } = req.params
     
-    const supplier: supplierResponse | null = await getOneSupplier(companyUUID, uuid)
+    const supplier: Supplier | null = await getOneSupplier(companyUUID, uuid)
     
     if (!supplier) return res.status(404).json({detail: `Supplier with uuid: ${uuid} does not exist`})
 

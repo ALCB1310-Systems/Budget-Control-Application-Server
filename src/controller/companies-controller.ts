@@ -2,7 +2,6 @@ import { Company } from './../models/companies-entity';
 import { saveUser } from './users-controller';
 import { successType } from './../types/responses-types';
 import { errorType } from '../types/responses-types';
-import { v4 } from 'uuid'
 import { companyCreate, companyUpdate } from './../types/company-type'
 import { AppDataSource } from '../db/data-source'
 import { QueryRunner, Repository } from 'typeorm';
@@ -12,14 +11,14 @@ const companyRepository: Repository<Company> = AppDataSource.getRepository(Compa
 const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 
 export const createCompany = async (newCompany: companyCreate ): Promise<errorType | successType> => {
-    const company = new Company()
-    company.uuid = v4()
-    company.name = newCompany.name
-    company.ruc = newCompany.ruc
-    company.employees = newCompany.employees
     
     try {
         await queryRunner.startTransaction()
+        const company = new Company()
+        company.uuid
+        company.name = newCompany.name
+        company.ruc = newCompany.ruc
+        company.employees = newCompany.employees
         await queryRunner.manager.save(company)
 
         const userData: userCreate = {
@@ -36,6 +35,7 @@ export const createCompany = async (newCompany: companyCreate ): Promise<errorTy
         await queryRunner.rollbackTransaction()
         if (error.code !== undefined && error.code === '23505' && error.table === 'company') return { status: 409, detail: `Company with name: "${newCompany.name} "or ruc: "${newCompany.ruc}" already exists`}
         if (error.code !== undefined && error.code === '23505' && error.table === 'user') return { status: 409, detail: `User with name: "${newCompany.fullname} "or email: "${newCompany.email}" already exists`}
+        if (error.code !== undefined && error.code === 'alcb1') return {status: 400, detail: JSON.parse(error.message)}
 
         console.error(error)
 
@@ -44,8 +44,6 @@ export const createCompany = async (newCompany: companyCreate ): Promise<errorTy
 }
 
 export const getCompany = async (companyUUID: string): Promise<Company | null> => {
-    // return await companyRepository.findOneBy({uuid: companyUUID})
-
     return companyRepository.createQueryBuilder("company")
         .select("company.uuid")
         .addSelect("company.ruc")

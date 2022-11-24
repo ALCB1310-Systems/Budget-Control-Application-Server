@@ -12,7 +12,7 @@ const queryRunner: QueryRunner = AppDataSource.createQueryRunner()
 
 export const createSupplier = async (newSupplier: supplierCreate, company: Company, user: User): Promise<errorType | successType> => {
     const supplierToCreate = new Supplier()
-    supplierToCreate.uuid = v4()
+    supplierToCreate.uuid
     supplierToCreate.supplier_id = newSupplier.supplier_id
     supplierToCreate.name = newSupplier.name
     supplierToCreate.contact_email = newSupplier.contact_email
@@ -39,7 +39,7 @@ export const createSupplier = async (newSupplier: supplierCreate, company: Compa
     }
 }
 
-export const getAllSuppliers = async (companyUUID: string): Promise<supplierResponse[]> => {
+export const getAllSuppliers = async (companyUUID: string): Promise<Supplier[]> => {
     const suppliers = await supplierRepository
         .createQueryBuilder("supplier")
         .select("supplier.uuid")
@@ -56,7 +56,7 @@ export const getAllSuppliers = async (companyUUID: string): Promise<supplierResp
     return suppliers
 }
 
-export const getOneSupplier = async (companyUUID: string, supplierUUID: string): Promise<supplierResponse | null> => {
+export const getOneSupplier = async (companyUUID: string, supplierUUID: string): Promise<Supplier | null> => {
     const supplier = await supplierRepository
         .createQueryBuilder("supplier")
         .select("supplier.uuid")
@@ -75,11 +75,11 @@ export const getOneSupplier = async (companyUUID: string, supplierUUID: string):
     return supplier
 }
 
-export const updateSupplier = async (updatedSupplierInformation: supplierCreate, supplierToUpdate: supplierResponse): Promise<errorType | successType> => {
+export const updateSupplier = async (updatedSupplierInformation: supplierCreate, supplierToUpdate: Supplier): Promise<errorType | successType> => {
 
     supplierToUpdate.supplier_id = updatedSupplierInformation.supplier_id !== null ? updatedSupplierInformation.supplier_id : supplierToUpdate.supplier_id
     supplierToUpdate.name = updatedSupplierInformation.name !== null ? updatedSupplierInformation.name : supplierToUpdate.name
-    supplierToUpdate.contact_name = updatedSupplierInformation.contact_name !== null ? updatedSupplierInformation.contact_name : supplierToUpdate.contact_email
+    supplierToUpdate.contact_name = updatedSupplierInformation.contact_name !== null ? updatedSupplierInformation.contact_name : supplierToUpdate.contact_name
     supplierToUpdate.contact_email = updatedSupplierInformation.contact_email !== null ? updatedSupplierInformation.contact_email : supplierToUpdate.contact_email
     supplierToUpdate.contact_phone = updatedSupplierInformation.contact_phone !== null? updatedSupplierInformation.contact_phone : supplierToUpdate.contact_phone
 
