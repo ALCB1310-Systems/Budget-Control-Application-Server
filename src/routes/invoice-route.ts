@@ -3,7 +3,7 @@ import { getBudgetByItemAndProject } from './../controller/budget-controller';
 import { Project } from './../models/projects-entity';
 import { getOneBudgetItemWithBudgetItemResponse } from './../controller/budget-items-controller';
 import { BudgetItem } from './../models/budget-items-entity';
-import { createInvoiceDetail, getAllInvoiceDetaile } from '../controller/invoice-details-controller';
+import { createInvoiceDetail, deleteInvoiceDetail, getAllInvoiceDetail } from '../controller/invoice-details-controller';
 import { errorType, successType } from './../types/responses-types';
 import { Invoice } from './../models/invoce-entity';
 import { validateUUID, isValidUUID } from './../middleware/validateUuid';
@@ -151,9 +151,19 @@ router.get("/:uuid/details", validateToken, validateUUID, async (req: Request, r
     const invoiceUUID = req.params.uuid
     const { companyUUID } = res.locals.token 
 
-    const invoiceDetailsData: InvoiceDetail[] = await getAllInvoiceDetaile(invoiceUUID, companyUUID)
+    const invoiceDetailsData: InvoiceDetail[] = await getAllInvoiceDetail(invoiceUUID, companyUUID)
 
     return res.status(200).json({detail: formatManyInvoiceDetailResponse(invoiceDetailsData)})
+})
+
+router.delete("/:uuid/details/:detail", validateToken, validateUUID, async (req: Request, res: Response) => {
+    const { uuid, detail } = req.params
+    const { companyUUID } = res.locals.token
+
+    if (await deleteInvoiceDetail(uuid, detail, companyUUID))
+        return res.sendStatus(204)
+    
+    return res.sendStatus(500)
 })
 
 export default router

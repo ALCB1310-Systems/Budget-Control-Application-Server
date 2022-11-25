@@ -67,7 +67,7 @@ export const createInvoiceDetail = async (invoiceDetailData: invoiceDetailCreate
     }
 }
 
-export const getAllInvoiceDetaile = async (invoiceUUID: string, companyUUID: string): Promise<InvoiceDetail[]> => {
+export const getAllInvoiceDetail = async (invoiceUUID: string, companyUUID: string): Promise<InvoiceDetail[]> => {
     const invoiceDetails = invoiceDetailRepository.createQueryBuilder("detail")
         .leftJoinAndSelect("detail.budgetItem", "budgetItem")
         .leftJoinAndSelect("detail.invoice", "invoice")
@@ -80,4 +80,72 @@ export const getAllInvoiceDetaile = async (invoiceUUID: string, companyUUID: str
         .getMany()
 
     return invoiceDetails
+}
+
+export const getOneInvoiceDetail = async (invoiceUUID: string, invoiceDetailUUID: string, companyUUID: string): Promise<InvoiceDetail | null> => {
+    const invoiceDetail = invoiceDetailRepository.createQueryBuilder("detail")
+        .leftJoinAndSelect("detail.budgetItem", "budgetItem")
+        .leftJoinAndSelect("detail.invoice", "invoice")
+        .leftJoinAndSelect("invoice.supplier", "supplier")
+        .leftJoinAndSelect("invoice.project", "project")
+        .leftJoinAndSelect("detail.company", "company")
+        .andWhere("detail.companyUuid = :companyUUID")
+        .andWhere("detail.invoiceUuid = :invoiceUUID")
+        .andWhere("detail.uuid = :UUID")
+        .setParameter("companyUUID", companyUUID)
+        .setParameter("invoiceUUID", invoiceUUID)
+        .setParameter("UUID", invoiceDetailUUID)
+        .getOne()
+
+    return invoiceDetail
+}
+
+export const deleteInvoiceDetail = async (invoiceUUID: string, detailUUID: string, companyUUID: string): Promise<boolean> => {
+    try {
+        await queryRunner.startTransaction()
+
+        const invoiceDetail: InvoiceDetail | null = await getOneInvoiceDetail(invoiceUUID, detailUUID, companyUUID)
+
+        if (!invoiceDetail){ 
+            await queryRunner.rollbackTransaction()
+            return false
+        }
+
+        const budget: Budget | null = await getBudgetByItemAndProject(invoiceDetail.budgetItem.uuid, invoiceDetail.invoice.project.uuid, invoiceDetail.company.uuid)
+        if (!budget){
+            await queryRunner.rollbackTransaction()
+            return false
+        }
+
+        const previousUpdatedBudget = budget.updated_budget
+
+        if (budget.spent_quantity === null || budget.to_spend_quantity === null){
+            await queryRunner.rollbackTransaction()
+            return false
+        }
+        
+        budget.spent_quantity -= invoiceDetail.quantity
+        budget.spent_total -= invoiceDetail.total
+        budget.to_spend_cost = invoiceDetail.cost
+        budget.to_spend_quantity += invoiceDetail.quantity
+        budget.to_spend_total = budget.to_spend_quantity * budget.to_spend_cost
+        budget.updated_budget = budget.spent_total + budget.to_spend_total
+
+        const diff = budget.updated_budget - previousUpdatedBudget
+        if (budget.budgetItem.parent){
+            const nextBudget: Budget | null = await getBudgetByItemAndProject(budget.budgetItem.parent.uuid, budget.project.uuid, budget.company.uuid)
+            if(nextBudget)
+                await saveBudgetWithSpent(-invoiceDetail.total, diff, nextBudget, queryRunner)
+        }
+
+        queryRunner.manager.remove(invoiceDetail)
+
+        await queryRunner.commitTransaction()
+        return true
+    } catch (error) {
+        await queryRunner.rollbackTransaction()
+        console.error(error)
+        return false
+    }
+
 }
