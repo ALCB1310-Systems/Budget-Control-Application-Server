@@ -26,7 +26,11 @@ router.post('/', validateToken, validateData(createUserValidator), async (req: R
     
     const createUserResponse = await createUser({email, password, name, company})
 
+    if (createUserResponse.status === 409 )
+        return res.status(createUserResponse.status).json({detail: createUserResponse.detail})
+
     return res.status(createUserResponse.status).json({detail: formatOneUserResponse(createUserResponse.detail, company)})
+
 })
 
 router.get("/", validateToken,async (req: Request, res: Response) => {
