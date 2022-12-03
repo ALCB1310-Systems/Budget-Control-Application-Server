@@ -20,13 +20,15 @@ export const validateData = (dataValidator: any) => {
                     }
                 })
             
-            if (dataValidator[key].type === 'email' && req.body[key] !== undefined && !isEmailValid(req.body[key])) // If it is an email we will use our email validator
+            if (dataValidator[key].type === 'email' && req.body[key] !== undefined && req.body[key] !== '' && req.body[key] !== null && !isEmailValid(req.body[key])){ // If it is an email we will use our email validator
+                debug(`${key}`,req.body[key])
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
                         errorDescription: `${key} should be a valid email`
                     }
                 })
+            }
 
             if (dataValidator[key].type === 'uuid' && req.body[key] !== undefined && !isValidUUID(req.body[key])) // If it is an UUID we will use our UUID validator
                 return res.status(400).json({
@@ -60,7 +62,7 @@ export const validateData = (dataValidator: any) => {
                     }
                 })
             
-            if ('length' in dataValidator[key] && req.body[key] !== undefined  && req.body[key].length < dataValidator[key].length)
+            if ('length' in dataValidator[key] && req.body[key] !== undefined && req.body[key] !== ''  && req.body[key] !== null  && req.body[key].length < dataValidator[key].length)
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
