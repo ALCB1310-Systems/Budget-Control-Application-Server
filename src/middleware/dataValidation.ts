@@ -12,6 +12,7 @@ export const validateData = (dataValidator: any) => {
         // iterate through each object property in the data validator to validate that we are receiving valid information
         // will always return what key triggered the validation error and what happened to trigger the error
         for (const key in dataValidator){
+            if (req.body[key] === '') delete req.body[key] 
             if (dataValidator[key].required && req.body[key] === undefined) // This will check if a required value is present
                 return res.status(400).json({
                     detail: {
@@ -21,7 +22,6 @@ export const validateData = (dataValidator: any) => {
                 })
             
             if (dataValidator[key].type === 'email' && req.body[key] !== undefined && req.body[key] !== '' && req.body[key] !== null && !isEmailValid(req.body[key])){ // If it is an email we will use our email validator
-                debug(`${key}`,req.body[key])
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
@@ -30,13 +30,14 @@ export const validateData = (dataValidator: any) => {
                 })
             }
 
-            if (dataValidator[key].type === 'uuid' && req.body[key] !== undefined && !isValidUUID(req.body[key])) // If it is an UUID we will use our UUID validator
+            if (dataValidator[key].type === 'uuid' && req.body[key] !== undefined && req.body[key] !== null && !isValidUUID(req.body[key])){ // If it is an UUID we will use our UUID validator
                 return res.status(400).json({
                     detail: {
                         errorKey: key,
                         errorDescription: `${key} should be a valid UUID`
                     }
                 })
+}
 
             if (dataValidator[key].type === 'number' && req.body[key] !== undefined  && typeof req.body[key] !== 'number') 
                 return res.status(400).json({
