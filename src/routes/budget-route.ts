@@ -1,3 +1,4 @@
+import { debug } from 'console';
 import { validateData } from './../middleware/dataValidation';
 import { errorType, successType } from './../types/responses-types';
 import { validateUUID } from './../middleware/validateUuid';
@@ -46,8 +47,8 @@ router.get("/", validateToken, async (req: Request, res: Response) => {
     const { companyUUID } = res.locals.token
     const project = req.query.project
 
-    if (project && typeof project !== 'string') return res.status(400).json({detail: `Job uuid is not valid`})
-    if (project && !isValidUUID(project)) return res.status(400).json({detail: `Job uuid is not valid`})
+    if (project && typeof project !== 'string') return res.status(400).json({detail: `Project name is not valid`})
+    // if (project && !isValidUUID(project)) return res.status(400).json({detail: `Project uuid is not valid`})
 
     const budgets = await getAllBudgets(companyUUID, project)
 

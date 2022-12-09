@@ -128,7 +128,7 @@ export const getAllBudgets = async (companyUUID: string, projectUUID: string | n
         .setParameter("company", companyUUID)
 
     if (projectUUID){
-        budgets = budgets.andWhere("budget.projectUuid = :project")
+        budgets = budgets.andWhere("project.name = :project")
             .setParameter("project",projectUUID)
     }
 
@@ -159,7 +159,8 @@ export const getOneBudget = async (budgetUUID: string, companyUUID: string): Pro
 
 export const updateBudget = async (updatedInfo: budgetUpdate, budgetToUpdate: Budget, companyUUID: string): Promise<errorType | successType> => {
     const diff = updatedInfo.total - budgetToUpdate.to_spend_total
-    debug("Diff", diff)
+
+    if (!diff) return {status:500, detail: 'Error saving data, got not a number in difference '}
 
     try {
         await queryRunner.startTransaction()
@@ -198,7 +199,6 @@ const updateParentBudget = async (diff: number, budget: Budget, companyUUID: str
         queryRunner.manager.save(budget)
 
         if (budget.budgetItem.parent){
-            debug(budget.budgetItem.parent)
             const nextBudget = await getBudgetByItemAndProject(budget.budgetItem.parent.uuid, budget.project.uuid, companyUUID)
             if (!nextBudget) throw new Error("No budget found for parent, check logs")
 
