@@ -2,6 +2,5 @@
 /build/
 package-lock.json
 .env
-/dist
 testUsers.md
 node_modules
