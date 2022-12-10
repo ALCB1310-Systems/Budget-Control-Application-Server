@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const users_route_1 = __importDefault(require("./users-route"));
+const company_route_1 = __importDefault(require("./company-route"));
+const login_route_1 = __importDefault(require("./login-route"));
+const supplier_route_1 = __importDefault(require("./supplier-route"));
+const project_route_1 = __importDefault(require("./project-route"));
+const budget_items_route_1 = __importDefault(require("./budget-items-route"));
+const budget_route_1 = __importDefault(require("./budget-route"));
+const invoice_route_1 = __importDefault(require("./invoice-route"));
+const router = express_1.default.Router();
+router.use('/users', users_route_1.default);
+router.use('/companies', company_route_1.default);
+router.use('/login', login_route_1.default);
+router.use('/suppliers', supplier_route_1.default);
+router.use('/projects', project_route_1.default);
+router.use("/budget-items", budget_items_route_1.default);
+router.use('/budgets', budget_route_1.default);
+router.use('/invoices', invoice_route_1.default);
+exports.default = router;
